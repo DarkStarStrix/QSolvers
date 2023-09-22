@@ -7,3 +7,6 @@ Some instances with tens of thousands of cities can be solved completely, and ev
 
 The TSP has several applications in various fields such as planning, logistics, microchip manufacturing, DNA sequencing, astronomy, and more. 
 It is used as a benchmark for testing optimization methods and appears as a sub-problem in many areas.
+
+
+![np-hard-traveling-salesman-problem-l](https://github.com/DarkStarStrix/Traveling_Salesman_Problem_2.0/assets/108637439/70f1afa5-5d08-439f-9d94-e1155e2eccf0)
