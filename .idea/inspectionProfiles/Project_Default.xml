@@ -1,0 +1,86 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="DuplicatedCode" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <Languages>
+        <language minSize="413" name="Python" />
+      </Languages>
+    </inspection_tool>
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="16">
+            <item index="0" class="java.lang.String" itemvalue="pandas" />
+            <item index="1" class="java.lang.String" itemvalue="polars" />
+            <item index="2" class="java.lang.String" itemvalue="genetic" />
+            <item index="3" class="java.lang.String" itemvalue="seaborn" />
+            <item index="4" class="java.lang.String" itemvalue="matplotlib" />
+            <item index="5" class="java.lang.String" itemvalue="fairscale" />
+            <item index="6" class="java.lang.String" itemvalue="sentencepiece" />
+            <item index="7" class="java.lang.String" itemvalue="fire" />
+            <item index="8" class="java.lang.String" itemvalue="torch" />
+            <item index="9" class="java.lang.String" itemvalue="scipy" />
+            <item index="10" class="java.lang.String" itemvalue="qiskit" />
+            <item index="11" class="java.lang.String" itemvalue="numpy" />
+            <item index="12" class="java.lang.String" itemvalue="qiskit-ignis" />
+            <item index="13" class="java.lang.String" itemvalue="qiskit.utils" />
+            <item index="14" class="java.lang.String" itemvalue="qiskit-ibmq-provider" />
+            <item index="15" class="java.lang.String" itemvalue="sklearn" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8Inspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="E501" />
+          <option value="E722" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N801" />
+          <option value="N814" />
+          <option value="N813" />
+          <option value="N802" />
+          <option value="N803" />
+          <option value="N806" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyShadowingNamesInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyStatementEffectInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="requests.head.distance" />
+          <option value="Save_Data.scoreboard.high_score" />
+          <option value="random.random.choice" />
+          <option value="random.choice.choice" />
+          <option value="int.*" />
+          <option value="chatbotAI" />
+          <option value="pandas" />
+          <option value="list.ycor" />
+          <option value="Constants_Dictionary.*" />
+          <option value="main.t" />
+          <option value="list.time" />
+          <option value="Quantum_Tsp.*" />
+          <option value="list.y" />
+          <option value="turing_machine.TuringMachine.__getitem__" />
+          <option value="pytorch_lightning.callbacks.*" />
+          <option value="list.city_list" />
+          <option value="qiskit.circuit.quantumcircuit.QuantumCircuit.u3" />
+          <option value="pyximport" />
+          <option value="qiskit.circuit.quantumcircuit.QuantumCircuit.*" />
+          <option value="dict.eigenvalue" />
+          <option value="dict.eigenstate" />
+          <option value="qiskit_optimization.applications.tsp.get_operator" />
+          <option value="Quantum_TSP.best_route" />
+          <option value="Quantum_TSP.best_fitness" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

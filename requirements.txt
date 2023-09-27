@@ -1,0 +1,6 @@
+matplotlib~=3.8.0
+numpy~=1.26.0
+qiskit~=0.44.1
+networkx~=2.8.8
+dimod~=0.12.12
+dwavebinarycsp~=0.2.0
