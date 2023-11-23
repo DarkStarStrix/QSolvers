@@ -1,0 +1,36 @@
+name: Traveling_Salesman
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run tests
+      run: |
+        # Add commands to run your tests here.
+        pytest
+
+    - name: Build application
+      run: |
+        # Add commands to build your application here.
+
+    - name: Deploy application
+      run: |
+        # Add commands to deploy your application here.
