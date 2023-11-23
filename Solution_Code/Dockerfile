@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.8-slim-buster
+FROM python:3.9
 
 # Set the working directory in the container to /app
 WORKDIR /app
@@ -13,5 +13,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Make port 80 available to the world outside this container
 EXPOSE 80
 
-# Run Quantum_A.py when the container launches
-CMD ["python", "Quantum_A.py"]
+# Run main.py when the container launches
+CMD ["python", "Quantum_A.py", "Quantum_Annealing.py", "Quantum_Convex.py", "Quantum_Genetic_Algothrim.py"]
