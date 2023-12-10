@@ -7,112 +7,71 @@ from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
 
 
 class QuantumTSP:
-    def __init__(self, num_cities, pop_size, generations, mutation_rate, crossover_rate, elite_size, num_qubits):
-        self.cities = None
-        self.num_cities = num_cities
+    def __init__(self, cities, pop_size, generations, mutation_rate, elite_size, num_qubits):
+        self.cities = cities
         self.pop_size = pop_size
         self.generations = generations
         self.mutation_rate = mutation_rate
-        self.crossover_rate = crossover_rate
         self.elite_size = elite_size
         self.num_qubits = num_qubits
-        self.population = []
+        self.population = [np.random.permutation (len (cities)) for _ in range (pop_size)]
         self.fitness = []
         self.best_fitness = []
         self.best_individual = []
 
-    def initialize_population(self):
-        for _ in range (self.pop_size):
-            individual = np.random.permutation (self.num_cities)
-            self.population.append (individual)
-
     def calculate_fitness(self):
-        self.fitness = []
-        for i in range (self.pop_size):
-            individual = self.population [i]
-            fitness = 0
-            for j in range (self.num_cities - 1):
-                # Assuming cities are represented as (x, y) coordinates
-                city1 = self.cities [individual [j]]
-                city2 = self.cities [individual [j + 1]]
-                fitness += np.linalg.norm (np.array (city1) - np.array (city2))
-            # Add distance from the last city back to the starting city
-            first_city = self.cities [individual [0]]
-            last_city = self.cities [individual [-1]]
-            fitness += np.linalg.norm (np.array (last_city) - np.array (first_city))
-            self.fitness.append (fitness)
+        self.fitness = [self.calculate_route_length (individual) for individual in self.population]
+
+    def calculate_route_length(self, route):
+        return sum (
+            np.linalg.norm (np.array (self.cities [route [i]]) - np.array (self.cities [route [i + 1]])) for i in
+            range (len (self.cities) - 1)) + np.linalg.norm (
+            np.array (self.cities [route [-1]]) - np.array (self.cities [route [0]]))
 
     def select_parents(self):
         parents = []
-        for _ in range (self.elite_size):
-            index = np.argmin (self.fitness)
-            parents.append (self.population [index])
-            self.fitness [index] = np.inf  # Mark as selected
+        for _ in range (min (self.elite_size, len (self.population))):
+            parents.append (self.population.pop (np.argmin (self.fitness)))
         return parents
 
     def crossover(self, parents):
-        children = []
-        for _ in range (self.pop_size - self.elite_size):
-            parent1 = parents [np.random.randint (0, self.elite_size)]
-            parent2 = parents [np.random.randint (0, self.elite_size)]
-            start = np.random.randint (0, self.num_cities)
-            end = np.random.randint (start + 1, self.num_cities + 1)
-            child = [-1] * self.num_cities
-            child [start:end] = parent1 [start:end]
-            remaining_cities = [x for x in parent2 if x not in child]
-            for i in range (self.num_cities):
-                if child [i] == -1:
-                    child [i] = remaining_cities.pop (0)
-            children.append (child)
-        return children
+        return [self.create_child (parents) for _ in range (self.pop_size - self.elite_size)]
+
+    def create_child(self, parents):
+        parent1, parent2 = np.random.choice (len (parents), 2, replace=False)
+        parent1, parent2 = parents [parent1], parents [parent2]
+        start, end = sorted (np.random.choice (len (self.cities), 2, replace=False))
+        child = [-1] * len (self.cities)
+        child [start:end] = parent1 [start:end]
+        remaining_cities = [city for city in parent2 if city not in child]
+        child = [remaining_cities.pop (0) if city == -1 else city for city in child]
+        return child
 
     def mutate(self, children):
-        for i in range (self.pop_size - self.elite_size):
+        for child in children:
             if np.random.rand () < self.mutation_rate:
-                index1, index2 = np.random.choice (self.num_cities, 2, replace=False)
-                children [i] [index1], children [i] [index2] = children [i] [index2], children [i] [index1]
+                index1, index2 = np.random.choice (len (self.cities), 2, replace=False)
+                child [index1], child [index2] = child [index2], child [index1]
         return children
 
     def variable_neighborhood_search(self, children):
-        for i in range (self.pop_size - self.elite_size):
+        for child in children:
             if np.random.rand () < self.mutation_rate:
-                index1, index2 = np.random.choice (self.num_cities, 2, replace=False)
-                children [i] [index1], children [i] [index2] = children [i] [index2], children [i] [index1]
-            if np.random.rand () < self.mutation_rate:
-                index1, index2 = np.random.choice (self.num_cities, 2, replace=False)
-                children [i] [index1], children [i] [index2] = children [i] [index2], children [i] [index1]
+                self.local_search (child)
         return children
 
-    def quantum_circuit(self, children):
-        q = QuantumRegister (self.num_qubits, 'q')
-        c = ClassicalRegister (self.num_qubits, 'c')
-        circuit = QuantumCircuit (q, c)
-
-        for i in range (self.num_qubits):
-            circuit.h (q [i])
-
-        for i in range (self.num_cities):
-            circuit.cswap (q [children [0] [i]], q [children [1] [i]], q [children [2] [i]])
-
-        for i in range (self.num_qubits):
-            circuit.h (q [i])
-            circuit.x (q [i])
-
-        circuit.h (q [self.num_qubits - 1])
-        circuit.mct (q [0:self.num_qubits - 1], q [self.num_qubits - 1], None, mode='noancilla')
-        circuit.h (q [self.num_qubits - 1])
-
-        for i in range (self.num_qubits):
-            circuit.x (q [i])
-            circuit.h (q [i])
-
-        for i in range (self.num_qubits):
-            circuit.measure (q [i], c [i])
-
-        return circuit
+    def local_search(self, child):
+        improved = True
+        while improved:
+            improved = False
+            for index1 in range (len (self.cities) - 1):
+                for index2 in range (index1 + 2, len (self.cities) + int (index1 > 0)):
+                    new_route = child [:index1] + child [index1:index2] [::-1] + child [index2:]
+                    if self.calculate_route_length (new_route) < self.calculate_route_length (child):
+                        child [:] = new_route
+                        improved = True
 
     def run(self):
-        self.initialize_population ()
         self.calculate_fitness ()
         for _ in range (self.generations):
             parents = self.select_parents ()
@@ -124,15 +83,60 @@ class QuantumTSP:
             index = np.argmin (self.fitness)
             self.best_fitness.append (self.fitness [index])
             self.best_individual.append (self.population [index])
-            self.population [index] = np.inf
-            self.fitness [index] = np.inf
-        self.best_individual = self.best_individual [np.argmin (self.best_fitness)]
         self.plot ()
 
     def plot(self):
         plt.figure (figsize=(8, 6))
-        x = [self.cities [i] [0] for i in self.best_individual]
-        y = [self.cities [i] [1] for i in self.best_individual]
+        x, y = zip (*[self.cities [i] for i in self.best_individual [np.argmin (self.best_fitness)]])
+        plt.plot (x, y, marker='o', linestyle='-')
+        plt.xlabel ('X Coordinate')
+        plt.ylabel ('Y Coordinate')
+        plt.title ('TSP Route')
+        plt.grid (True)
+        plt.show ()
+
+    def plot_fitness(self):
+        plt.figure (figsize=(8, 6))
+        plt.plot (self.best_fitness)
+        plt.xlabel ('Generation')
+        plt.ylabel ('Fitness')
+        plt.title ('Fitness over Generations')
+        plt.grid (True)
+        plt.show ()
+
+    def plot_circuit(self):
+        qr = QuantumRegister (self.num_qubits)
+        cr = ClassicalRegister (self.num_qubits)
+        qc = QuantumCircuit (qr, cr)
+        for i in range (self.num_qubits):
+            qc.h (qr [i])
+        qc.measure (qr, cr)
+        qc.draw (output='mpl')
+        plt.show ()
+
+    def plot_histogram(self):
+        qr = QuantumRegister (self.num_qubits)
+        cr = ClassicalRegister (self.num_qubits)
+        qc = QuantumCircuit (qr, cr)
+        for i in range (self.num_qubits):
+            qc.h (qr [i])
+        qc.measure (qr, cr)
+        qc.draw (output='mpl', style='iqp')
+        plt.show ()
+
+    def plot_cities(self):
+        plt.figure (figsize=(8, 6))
+        x, y = zip (*self.cities)
+        plt.plot (x, y, marker='o', linestyle='')
+        plt.xlabel ('X Coordinate')
+        plt.ylabel ('Y Coordinate')
+        plt.title ('Cities')
+        plt.grid (True)
+        plt.show ()
+
+    def plot_route(self):
+        plt.figure (figsize=(8, 6))
+        x, y = zip (*[self.cities [i] for i in self.best_individual [np.argmin (self.best_fitness)]])
         plt.plot (x, y, marker='o', linestyle='-')
         plt.xlabel ('X Coordinate')
         plt.ylabel ('Y Coordinate')
@@ -141,19 +145,14 @@ class QuantumTSP:
         plt.show ()
 
 
-# Example usage:
 if __name__ == "__main__":
-    num_cities = 10
-    pop_size = 100
-    generations = 100
-    mutation_rate = 0.01
-    crossover_rate = 0.8
-    elite_size = 10
-    num_qubits = 10
-
-    # Generate random city coordinates
-    cities = np.random.rand (num_cities, 2)
-
-    tsp = QuantumTSP (num_cities, pop_size, generations, mutation_rate, crossover_rate, elite_size, num_qubits)
-    tsp.cities = cities  # Set the city coordinates
+    cities = [(60, 200), (180, 200), (80, 180), (140, 180), (20, 160), (100, 160), (200, 160), (140, 140), (40, 120),
+              (100, 120), (180, 100), (60, 80), (120, 80), (180, 60), (20, 40), (100, 40), (200, 40), (20, 20),
+              (60, 20), (160, 20)]
+    tsp = QuantumTSP (cities, pop_size=100, generations=100, mutation_rate=0.01, elite_size=20, num_qubits=10)
     tsp.run ()
+    tsp.plot_fitness ()
+    tsp.plot_circuit ()
+    tsp.plot_histogram ()
+    tsp.plot_cities ()
+    tsp.plot_route ()
