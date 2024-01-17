@@ -28,17 +28,12 @@ W = wigner (result.states [-1], xvec, xvec)
 
 # Plot the results using plot_wigner using the last state in the result
 fig, ax = plt.subplots (1, 1, figsize=(10, 10))
-xvec = np.linspace (-5, 5, 200)
-W = wigner (result.states [-1], xvec, xvec)
 cont = ax.contourf (xvec, xvec, W, 100, cmap="bwr")
 plt.show ()
 
 # Plot the results using plot_wigner using the last state in the result in 3D
 fig = plt.figure (figsize=(10, 10))
 ax = fig.add_subplot (111, projection='3d')
-xvec = np.linspace (-5, 5, 200)
-W = wigner (result.states [-1], xvec, xvec)
-X, Y = np.meshgrid (xvec, xvec)
 ax.plot_surface (X, Y, W, rstride=1, cstride=1, cmap="bwr")
 plt.show ()
 
