@@ -2,7 +2,6 @@ document.getElementById('algorithm-form').addEventListener('submit', function(ev
     event.preventDefault();
 
     const algorithm = document.getElementById('algorithm').value;
-    const parameters = document.getElementById('parameters').value;
 
     fetch('/run_algorithm', {
         method: 'POST',
@@ -11,12 +10,18 @@ document.getElementById('algorithm-form').addEventListener('submit', function(ev
         },
         body: JSON.stringify({
             algorithm: algorithm,
-            parameters: parameters,
         }),
     })
-    .then(response => response.text())
+    .then(response => response.json())
     .then(data => {
-        document.getElementById('result').textContent = data;
+        const canvas = document.getElementById('result-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Assuming data is an array of points to be plotted
+        data.forEach((point) => {
+            ctx.lineTo(point.x, point.y);
+            ctx.stroke();
+        });
     })
     .catch((error) => {
         console.error('Error:', error);

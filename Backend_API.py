@@ -1,8 +1,14 @@
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 from docker import from_env
+import os
 
-app = Flask (__name__)
+app = Flask (__name__, static_folder='C:/Users/kunya/PycharmProjects/QuantumHybrid_Hyperoptimization')
 cli = from_env ()
+
+
+@app.route ('/')
+def index():
+    return send_from_directory (app.static_folder, 'Index.html')
 
 
 @app.route ('/run_algorithm', methods=['POST'])
@@ -10,7 +16,11 @@ def run_algorithm():
     algorithm = request.json ['algorithm']
     parameters = request.json ['parameters']
 
-    container = cli.containers.run (algorithm, parameters, detach=True)
+    # Get the full path to the script
+    script_path = os.path.join ('C:/Users/kunya/PycharmProjects/QuantumHybrid_Hyperoptimization/Solution_Code',
+                                algorithm)
+
+    container = cli.containers.run (script_path, parameters, detach=True)
 
     return container.logs ()
 

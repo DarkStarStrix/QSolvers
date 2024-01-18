@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="eng">
+<head>
+    <title>Modern UI</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: 'Roboto', sans-serif;
+        }
+        #algorithm-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
+        }
+        #algorithm {
+            width: 200px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+        #algorithm-form button {
+            width: 200px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3f51b5;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
+        }
+        #algorithm-form button:hover {
+            background-color: #303f9f;
+        }
+        #result-canvas {
+            width: 500px;
+            height: 500px;
+            border: 1px solid #000;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <form id="algorithm-form">
+        <label for="algorithm"></label><select id="algorithm">
+            <!-- Add your algorithm options here -->
+            <option value="algorithm1">Algorithm 1</option>
+            <option value="algorithm2">Algorithm 2</option>
+        </select>
+        <button type="submit">Run</button>
+    </form>
+    <canvas id="result-canvas"></canvas>
+    <script src="script.js"></script>
+</body>
+</html>
