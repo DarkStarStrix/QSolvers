@@ -44,6 +44,6 @@ The results of the algorithms are visualized using matplotlib. Each algorithm pl
 ## Contributing
 
 Contributions are welcome. Please submit a pull request if you have any improvements or suggestions.
-```
+
 ![traveling_salesman](https://github.com/DarkStarStrix/QuantumHybrid_Hyperoptimization/assets/108637439/6a42d0e3-2d38-4650-bc1d-00496ea0474a)
 
