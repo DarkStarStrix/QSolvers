@@ -12,12 +12,21 @@ class QuantumTSP:
         self.pop_size = pop_size
         self.generations = generations
         self.mutation_rate = mutation_rate
-        self.elite_size = elite_size
+        self.elite_size = int (elite_size)
         self.num_qubits = num_qubits
         self.population = [np.random.permutation (len (cities)) for _ in range (pop_size)]
         self.fitness = []
         self.best_fitness = []
         self.best_individual = []
+        self.cross_over = []
+        self.mutate = []
+        self.variable_neighborhood_search = []
+        self.parents = []
+        self.children = []
+        self.calculate_fitness ()
+
+    def initialize_population(self):
+        self.population = [np.random.permutation (len (self.cities)) for _ in range (self.pop_size)]
 
     def calculate_fitness(self):
         self.fitness = [self.calculate_route_length (individual) for individual in self.population]
@@ -30,12 +39,17 @@ class QuantumTSP:
 
     def select_parents(self):
         parents = []
-        for _ in range (min (self.elite_size, len (self.population))):
-            parents.append (self.population.pop (np.argmin (self.fitness)))
+        for _ in range (self.elite_size):
+            index = np.argmin (self.fitness)
+            parents.append (self.population.pop (index))
+            self.fitness.pop (index)
         return parents
 
     def crossover(self, parents):
-        return [self.create_child (parents) for _ in range (self.pop_size - self.elite_size)]
+        children = []
+        for _ in range (len (parents)):
+            children.append (self.create_child (parents))
+        return children
 
     def create_child(self, parents):
         parent1, parent2 = np.random.choice (len (parents), 2, replace=False)
@@ -72,18 +86,16 @@ class QuantumTSP:
                         improved = True
 
     def run(self):
-        self.calculate_fitness ()
         for _ in range (self.generations):
             parents = self.select_parents ()
             children = self.crossover (parents)
-            children = self.mutate (children)
-            children = self.variable_neighborhood_search (children)
+            children = self.mutate
+            children = self.variable_neighborhood_search
             self.population = parents + children
             self.calculate_fitness ()
-            index = np.argmin (self.fitness)
-            self.best_fitness.append (self.fitness [index])
-            self.best_individual.append (self.population [index])
-        self.plot ()
+            self.best_fitness.append (np.min (self.fitness))
+            self.best_individual.append (self.population [np.argmin (self.fitness)])
+        self.best_individual = np.array (self.best_individual)
 
     def plot(self):
         plt.figure (figsize=(8, 6))
