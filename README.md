@@ -1,7 +1,8 @@
-```markdown
+
 # Quantum Hybrid Hyperoptimization
 
-This project aims to solve the Traveling Salesman Problem (TSP) using various quantum hybrid algorithms. The TSP is a well-known combinatorial optimization problem that asks: "Given a list of cities and the distances between each pair of cities, what is the shortest possible route that visits each city exactly once and returns to the origin city?".
+This project aims to solve the Traveling Salesman Problem (TSP) using various quantum hybrid algorithms. The TSP is a well-known combinatorial optimization problem that asks:
+"Given a list of cities and the distances between each pair of cities, what is the shortest possible route that visits each city exactly once and returns to the origin city?".
 
 ## Algorithms Used
 
