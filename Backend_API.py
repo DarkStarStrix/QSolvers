@@ -8,7 +8,7 @@ cli = from_env ()
 
 @app.route ('/')
 def index():
-    return send_from_directory (app.static_folder, 'Index.html')
+    return send_from_directory (app.static_folder, 'templates')
 
 
 @app.route ('/run_algorithm', methods=['POST'])

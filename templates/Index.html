@@ -56,13 +56,14 @@
 <body>
     <form id="algorithm-form">
         <label for="algorithm"></label><select id="algorithm">
-            <!-- Add your algorithm options here -->
-            <option value="algorithm1">Algorithm 1</option>
-            <option value="algorithm2">Algorithm 2</option>
+            <option value="Quantum Genetic Algorithm">QGA</option>
+            <option value="Quantum Convex Hull Algorithm">QCHA</option>
+            <option value="Quantum Annealing">QA</option>
+            <option value="Quantum A* Algorithm">QA*</option>
         </select>
         <button type="submit">Run</button>
     </form>
     <canvas id="result-canvas"></canvas>
-    <script src="script.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

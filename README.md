@@ -1,4 +1,3 @@
-```markdown
 # Quantum Hybrid Hyperoptimization
 
 This project aims to solve the Traveling Salesman Problem (TSP) using various quantum hybrid algorithms. The TSP is a well-known combinatorial optimization problem that asks: "Given a list of cities and the distances between each pair of cities, what is the shortest possible route that visits each city exactly once and returns to the origin city?".
@@ -18,7 +17,7 @@ Each algorithm is implemented in Python using the Qiskit library for quantum com
 
 The project is structured as follows:
 
-- `Quantum_Genetic_Algothrim.py`: This file contains the implementation of the Quantum Genetic Algorithm for the TSP.
+- `Quantum_Genetic_Algorithm.py`: This file contains the implementation of the Quantum Genetic Algorithm for the TSP.
 - `Quantum_Convex.py`: This file contains the implementation of the Quantum Convex Hull Algorithm for the TSP.
 - `Quantum_Annealing.py`: This file contains the implementation of Quantum Annealing for the TSP.
 - `Quantum_A.py`: This file contains the implementation of the Quantum A* Algorithm for the TSP.
