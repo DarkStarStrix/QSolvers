@@ -1,8 +1,6 @@
 from flask import Flask, render_template, request, jsonify
-import Quantum_Genetic_Algorithm
-import Quantum_Convex
-import Quantum_Annealing
-import Quantum_A
+from Solution_Code import Quantum_Genetic_Algorithm, Quantum_Convex, Quantum_Annealing, Quantum_A
+from qiskit import Aer, QuantumCircuit, QuantumRegister, ClassicalRegister, execute
 
 app = Flask (__name__)
 
