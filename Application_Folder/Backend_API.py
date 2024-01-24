@@ -1,43 +1,57 @@
-from flask import Flask, request, send_from_directory
-from docker import from_env
-import os
+from flask import Flask, render_template, request, redirect, url_for
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, BooleanField
+from wtforms.validators import DataRequired, Email
+from flask_sqlalchemy import SQLAlchemy
 
-app = Flask (__name__, static_folder='C:/Users/kunya/PycharmProjects/QuantumHybrid_Hyperoptimization')
-cli = from_env ()
+app = Flask (__name__)
+app.config ['SECRET_KEY'] = 'your-secret-key'
+app.config ['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+db = SQLAlchemy (app)
+
+
+class User (db.Model):
+    id = db.Column (db.Integer, primary_key=True)
+    email = db.Column (db.String (120), unique=True, nullable=False)
+    category = db.Column (db.String (120), nullable=False)
+
+
+class RegistrationForm (FlaskForm):
+    email = StringField ('Email', validators=[DataRequired (), Email ()])
+    user = BooleanField ('User')
+    business = BooleanField ('Business')
+    submit = SubmitField ('Register')
+
+
+@app.route ('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm ()
+    if form.validate_on_submit ():
+        user = User (email=form.email.data)
+        if form.user.data:
+            user.category = 'user'
+        elif form.business.data:
+            user.category = 'business'
+        db.session.add (user)
+        db.session.commit ()
+        return redirect (url_for ('pay', email=user.email))
+    return render_template ('register.html', form=form)
+
+
+@app.route ('/pay/<email>', methods=['GET', 'POST'])
+def pay(email):
+    status = request.args.get ('status')
+    if status == 'success':
+        return render_template ('success.html')
+    elif status == 'failure':
+        return render_template ('failure.html')
+    return render_template ('pay.html', email=email)
 
 
 @app.route ('/')
 def index():
-    return send_from_directory (app.static_folder, 'templates')
-
-
-@app.route ('/run_algorithm', methods=['POST'])
-def run_algorithm():
-    algorithm = request.json ['algorithm']
-    parameters = request.json ['parameters']
-
-    # Get the full path to the script
-    script_path = os.path.join ('C:/Users/kunya/PycharmProjects/QuantumHybrid_Hyperoptimization/Solution_Code',
-                                algorithm)
-
-    container = cli.containers.run (script_path, parameters, detach=True)
-
-    return container.logs ()
-
-
-@app.route ('/get_images', methods=['GET'])
-def get_images():
-    images = cli.images.list ()
-
-    return str (images)
-
-
-@app.route ('/get_containers', methods=['GET'])
-def get_containers():
-    containers = cli.containers.list (all=True)
-
-    return str (containers)
+    return render_template ('index.html')
 
 
 if __name__ == '__main__':
-    app.run (debug=True, host='', port=5000)
+    app.run (debug=True)

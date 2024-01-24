@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <style>
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            flex: 1;
+        }
+        .page-footer {
+            border-radius: 15px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-wrapper">
+            <a href="#" class="brand-logo center">Logo</a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m6 offset-m3">
+                <form id="paymentForm" method="POST">
+                    <div class="input-field">
+                        <input type="text" id="cardNumber" name="cardNumber" required>
+                        <label for="cardNumber">Card Number</label>
+                    </div>
+                    <div class="input-field">
+                        <input type="text" id="expiryDate" name="expiryDate" required>
+                        <label for="expiryDate">Expiry Date</label>
+                    </div>
+                    <div class="input-field">
+                        <input type="text" id="cvv" name="cvv" required>
+                        <label for="cvv">CVV</label>
+                    </div>
+                    <div class="input-field">
+                        <input type="text" id="cardHolderName" name="cardHolderName" required>
+                        <label for="cardHolderName">Cardholder's Name</label>
+                    </div>
+                    <div class="input-field">
+                        <input type="email" id="institutionalEmail" name="institutionalEmail">
+                        <label for="institutionalEmail">Institutional Email (if applicable)</label>
+                    </div>
+                    <button class="btn waves-effect waves-light" type="submit" name="action">Pay
+                        <i class="material-icons right">send</i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <footer class="page-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="white-text">Contact Us</h5>
+                    <p class="grey-text text-lighten-4">Email: example@example.com</p>
+                    <p class="grey-text text-lighten-4">Phone: 123-456-7890</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="main.js"></script>
+</body>
+</html>
