@@ -1,8 +1,8 @@
 import stripe
 
 # generate a key from stripe.com and paste it here account details to get the key
-stripe.api_key = 'pk_test_51OZl77KwzH800itsg7FmSib4Z8dhvBdD9K1vCb5q54R0NzvDwvxRGD7YMn7ZEjD53kcnLwCJHK6NUCCovNHpWBMa00PKwvGvEs'
-user_email = 'allanw.mk@gamil.com'
+stripe.api_key = 'API-KEY'
+user_email = 'EMAIL'
 # Create a customer
 customer = stripe.Customer.create (
     email=user_email,
