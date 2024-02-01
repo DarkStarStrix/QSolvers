@@ -11,6 +11,7 @@ document.getElementById('algorithm-form').addEventListener('submit', function(ev
         body: JSON.stringify({
             algorithm: algorithm,
         }),
+
     })
     .then(response => response.json())
     .then(data => {
