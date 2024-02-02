@@ -41,10 +41,36 @@ class SchrodingerSolver (NonLinearSolver):
     def get_solution(self):
         return self.result
 
-    params = {'N': 100, 'L': 10.0}
+
+class NavierStokesSolver(NonLinearSolver):
+    def __init__(self):
+        super().__init__()
+        self.parameters = None
+        self.simulation = None
+
+    def set_params(self, params):
+        self.parameters = params
+
+    def solve(self):
+        navier_stokes_params = self.parameters
+        solver = NavierStokesSolver ()
+        solver.initialize ()
+        solver.solve ()
+        self.simulation = solver
+
+    def get_solution(self):
+        return self.simulation
 
 
-solver = SchrodingerSolver ()
-solver.set_params (params)
-solver.solve ()
-result = solver.get_solution ()
+schrodinger_params = {'N': 100, 'L': 10.0}
+navier_stokes_params = {'Nx': 100, 'Ny': 100, 'Nt': 100, 'dt': 0.01, 'T': 1.0, 'Re': 100}
+
+schrodinger_solver = SchrodingerSolver()
+schrodinger_solver.set_params(schrodinger_params)
+schrodinger_solver.solve()
+schrodinger_result = schrodinger_solver.get_solution()
+
+navier_stokes_solver = NavierStokesSolver()
+navier_stokes_solver.set_params(navier_stokes_params)
+navier_stokes_solver.solve()
+navier_stokes_solver.get_solution ()
