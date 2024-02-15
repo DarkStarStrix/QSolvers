@@ -34,8 +34,23 @@ def register():
             user.category = 'business'
         db.session.add (user)
         db.session.commit ()
-        return redirect (url_for ('pay', email=user.email))
+        if user.category == 'user':
+            return redirect (url_for ('user', email=user.email))
+        else:
+            return redirect (url_for ('business', email=user.email))
     return render_template ('register.html', form=form)
+
+
+@app.route ('/user/<email>', methods=['GET', 'POST'])
+def user(email):
+    # Handle form submission and redirect to payment page
+    return render_template ('user.html', email=email)
+
+
+@app.route ('/business/<email>', methods=['GET', 'POST'])
+def business(email):
+    # Handle form submission and redirect to payment page
+    return render_template ('business.html', email=email)
 
 
 @app.route ('/pay/<email>', methods=['GET', 'POST'])

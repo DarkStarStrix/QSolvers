@@ -24,7 +24,7 @@
             border-radius: 5px;
             box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
         }
-        #algorithm {
+        #algorithm, #num_cities {
             width: 200px;
             padding: 10px;
             border-radius: 5px;
@@ -51,6 +51,23 @@
             border: 1px solid #000;
             margin-top: 20px;
         }
+        .file-upload {
+            width: 200px;
+            height: 200px;
+            border: 2px dashed #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url('pdf-icon.png');
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .file-upload input[type="file"] {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -61,6 +78,14 @@
             <option value="Quantum Annealing">QuantumAnnealing</option>
             <option value="Quantum A* Algorithm">Quantum A*</option>
         </select>
+        <div class="input-field">
+            <label for="num_cities">Number of Cities</label>
+            <input type="number" id="num_cities" name="num_cities" required>
+        </div>
+        <div class="input-field file-upload">
+            <label class="hidden-label" for="Pdf_upload">Upload</label>
+            <input type="file" id="pdf_upload" name="pdf_upload" accept=".pdf">
+        </div>
         <button type="submit">Run</button>
     </form>
     <canvas id="result-canvas"></canvas>
