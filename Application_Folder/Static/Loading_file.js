@@ -21,6 +21,7 @@ document.getElementById('algorithm-form').addEventListener('submit', function(ev
     .then(response => response.json())
     .then(data => {
         // Start polling the task status every second
+        data.task_id = 'some_task_id';
         let intervalId = setInterval(() => {
             fetch(`/check_task/${data.task_id}`)
             .then(response => response.json())
