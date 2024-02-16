@@ -4,6 +4,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
+from qiskit.aqua.algorithms import QAOA
+from qiskit.aqua.components.optimizers import COBYLA
+from qiskit.aqua.translators.ising import tsp
+from qiskit.aqua import QuantumInstance
 
 
 class QuantumTSP:
@@ -75,15 +79,24 @@ class QuantumTSP:
         return children
 
     def local_search(self, child):
-        improved = True
-        while improved:
-            improved = False
-            for index1 in range (len (self.cities) - 1):
-                for index2 in range (index1 + 2, len (self.cities) + int (index1 > 0)):
-                    new_route = child [:index1] + child [index1:index2] [::-1] + child [index2:]
-                    if self.calculate_route_length (new_route) < self.calculate_route_length (child):
-                        child [:] = new_route
-                        improved = True
+        # Create a QAOA circuit
+        qaoa = QAOA (optimizer=COBYLA (), p=1, quantum_instance=QuantumInstance (qk.Aer.get_backend ('qasm_simulator')))
+
+        # Define the TSP problem for QAOA
+        tsp_qaoa = tsp.TspData ('tsp', len (self.cities), np.array (self.cities),
+                                self.calculate_distance_matrix (child))
+
+        # Convert the TSP problem to an Ising problem
+        ising_qaoa = tsp.get_operator (tsp_qaoa)
+
+        # Run QAOA on the Ising problem
+        result_qaoa = qaoa.compute_minimum_eigenvalue (ising_qaoa [0])
+
+        # Get the optimal route from the QAOA result
+        optimal_route_qaoa = tsp.get_tsp_solution (result_qaoa)
+
+        # Replace the child with the optimal route
+        child [:] = optimal_route_qaoa
 
     def run(self):
         for _ in range (self.generations):
@@ -95,7 +108,8 @@ class QuantumTSP:
             self.calculate_fitness ()
             self.best_fitness.append (np.min (self.fitness))
             self.best_individual.append (self.population [np.argmin (self.fitness)])
-        self.best_individual = np.array (self.best_individual)
+
+    self.best_individual = np.array (self.best_individual)
 
     def plot(self):
         plt.figure (figsize=(8, 6))
