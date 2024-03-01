@@ -24,7 +24,7 @@ login_manager.init_app (app)
 
 # User model
 class User (UserMixin):
-    def __init__(self, id):
+    def __init__(self, id2):
         self.id = id
 
 
@@ -114,7 +114,7 @@ def check_task(task_id):
     return jsonify (response)
 
 
-algorithm_mapping = {
+ALGORITHMS = {
     'Quantum Genetic Algorithm': Quantum_Genetic_Algorithm.run,
     'Quantum Convex Hull Algorithm': Quantum_Convex.run,
     'Quantum Annealing': Quantum_Annealing.run,
@@ -122,6 +122,60 @@ algorithm_mapping = {
     'Quantum Ant Colony Optimization': Quantum_ACO.run,
     'Quantum particle swarm optimization': Quantum_PSO.run,
 }
+
+
+def get_algorithm(name):
+    if name not in ALGORITHMS:
+        raise ValueError (f'Invalid algorithm: {name}')
+    return ALGORITHMS [name]
+
+
+@app.route ('/run_algorithm', methods=['POST'])
+@limiter.limit ("10/month")  # Limit user to 10 runs per month
+@login_required
+def run_algorithm():
+    data = request.get_json ()
+    algorithm_name = data.get ('algorithm')
+    try:
+        run_func = get_algorithm (algorithm_name)
+    except ValueError as e:
+        return jsonify ({'error': str (e)}), 400
+
+    # Run tests on the selected algorithm
+    test_result = run_tests (algorithm_name)
+    if not test_result:
+        return jsonify ({'error': 'Tests failed'}), 400
+
+    # Add the algorithm execution to the Celery task queue
+    task = execute_algorithm.delay (run_func)
+
+    return jsonify ({'task_id': task.id}), 202
+
+
+@app.route ('/check_task/<task_id>', methods=['GET'])
+@login_required
+def check_task(task_id):
+    task = execute_algorithm.AsyncResult (task_id)
+    if task.state == 'PENDING':
+        response = {
+            'state': task.state,
+            'status': 'Pending...'
+        }
+    elif task.state != 'FAILURE':
+        response = {
+            'state': task.state,
+            'result': task.result,
+        }
+        if 'result' in response:
+            response ['status'] = task.result.get ('status', 'No status found')
+    else:
+        # something went wrong in the background job
+        response = {
+            'state': task.state,
+            'status': str (task.info),  # this is the exception raised
+        }
+    return jsonify (response)
+
 
 if __name__ == '__main__':
     app.run (debug=True)
