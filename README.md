@@ -50,11 +50,11 @@ The project is structured as follows:
 -  These files contain the implementation of the quantum hybrid algorithms for the TSP. Each file contains a class that implements the algorithm and a main function that runs the algorithm on a sample TSP problem.
 
 # Bosonic Quantum Solvers in these quantum algorithms for Quantum chemistry and Quantum post-quantum cryptography and financial modeling and optimization and quantum machine learning and quantum computing and quantum machine learning and quantum internet and quantum blockchain and quantum internet of things 
-# Bosonic-Chemistry Quantum Solvers 
-# Bosonic-Post-Quantum-Cryptography Quantum Solvers
-# Bosonic-Financial-Modeling Quantum Solvers
-# Bosonic-Quantum-Key-Distribution Quantum Solvers
-# Bosonic-Quantum-Machine-Learning Quantum Solvers
+ Bosonic-Chemistry Quantum Solvers 
+ Bosonic-Post-Quantum-Cryptography Quantum Solvers
+ Bosonic-Financial-Modeling Quantum Solvers
+ Bosonic-Quantum-Key-Distribution Quantum Solvers
+ Bosonic-Quantum-Machine-Learning Quantum Solvers
 
 
 ## Running the Code
