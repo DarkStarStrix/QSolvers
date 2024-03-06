@@ -6,5 +6,6 @@
                  name="Help"
                  start-page="starter-topic.md">
 
+    <toc-element topic="Technical-Explaination.md"/>
     <toc-element topic="starter-topic.md"/>
 </instance-profile>
