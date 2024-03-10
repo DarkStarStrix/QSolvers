@@ -58,7 +58,7 @@ The project is structured as follows:
 - `Quantum_Approximate_Optimization_Algorithm.py`: This file contains the implementation of the Quantum Approximate Optimization Algorithm for the TSP.
   
 - `Quantum_Non_Linear_Solvers.py`: This file contains the implementation of the Quantum Non-Linear Solvers for the TSP.
-- 
+  
 - `Quantum_Non_Linear_Naiver_Stokes_Solvers.py`: This file contains the implementation of the Quantum Non-Linear Naiver Stokes Solvers for the TSP.
   
 - `Quantum_Non_Linear_Schrodinger_Solvers.py`: This file contains the implementation of the Quantum Non-Linear Schrödinger Solvers for the TSP.
