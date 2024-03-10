@@ -44,15 +44,25 @@ Each algorithm is implemented in Python using the Qiskit library for quantum com
 The project is structured as follows:
 
 - `Quantum_Genetic_Algorithm.py`: This file contains the implementation of the Quantum Genetic Algorithm for the TSP.
+  
 - `Quantum_Convex.py`: This file contains the implementation of the Quantum Convex Hull Algorithm for the TSP.
+  
 - `Quantum_Annealing.py`: This file contains the implementation of Quantum Annealing for the TSP.
+  
 - `Quantum_A.py`: This file contains the implementation of the Quantum A* Algorithm for the TSP.
+  
 - `Quantum_Particle_Swarm_Optimization.py`: This file contains the implementation of the Quantum Particle Swarm Optimization for the TSP.
+  
 - `Quantum_Ant_Colony_Optimization.py`: This file contains the implementation of the Quantum Ant Colony Optimization for the TSP.
+  
 - `Quantum_Approximate_Optimization_Algorithm.py`: This file contains the implementation of the Quantum Approximate Optimization Algorithm for the TSP.
+  
 - `Quantum_Non_Linear_Solvers.py`: This file contains the implementation of the Quantum Non-Linear Solvers for the TSP.
+- 
 - `Quantum_Non_Linear_Naiver_Stokes_Solvers.py`: This file contains the implementation of the Quantum Non-Linear Naiver Stokes Solvers for the TSP.
+  
 - `Quantum_Non_Linear_Schrodinger_Solvers.py`: This file contains the implementation of the Quantum Non-Linear Schrödinger Solvers for the TSP.
+  
 -  These files contain the implementation of the quantum hybrid algorithms for the TSP. Each file contains a class that implements the algorithm and a main function that runs the algorithm on a sample TSP problem.
 
 Bosonic Quantum Solvers in these quantum algorithms for Quantum chemistry and Quantum post-quantum cryptography and financial modeling and optimization and quantum machine learning and quantum computing and quantum machine learning and quantum internet and quantum blockchain and quantum internet of things 
