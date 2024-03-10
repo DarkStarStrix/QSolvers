@@ -4,7 +4,7 @@ This project aims to solve the Traveling Salesman Problem (TSP) using various qu
 Quantum Industrial Solver SDK A proprietary solution for complex industrial problems, from logistics optimization to advanced data analysis.
 
 ## How it works
-_The library works by using quantum algorithms to optimize the traveling salesman problem for logistics and other industrial problems. 
+The library works by using quantum algorithms to optimize the traveling salesman problem for logistics and other industrial problems. 
 The library uses a variety of quantum algorithms to solve the problem, including quantum genetic algorithms, quantum convex hull algorithms, quantum annealing, quantum A* algorithms, quantum particle swarm optimization, quantum ant colony optimization, quantum approximate optimization algorithms, quantum non-linear solvers, quantum non-linear naiver stokes solvers, and quantum non-linear schrodinger solvers. 
 
 The library is designed to be easy to use and can be used to solve a variety of industrial problems.
@@ -23,16 +23,19 @@ and a 45-minute call to discuss the library and for the business to get a better
 
 The project uses the following quantum hybrid algorithms:
 
+## Logistics Solvers
 1. Quantum Genetic Algorithm
 2. Quantum Convex Hull Algorithm
 3. Quantum Annealing
-4. Quantum A* Algorithm
-5. quantum particle swarm optimization
-6. Quantum ant colony optimization
-7. Quantum approximate optimization algorithm
-8. Quantum non-linear solvers 
-9. Quantum non-linear naiver stokes solvers
-10. Quantum non-linear schrodinger solvers
+5. Quantum A* Algorithm
+6. quantum particle swarm optimization
+7. Quantum ant colony optimization
+9. Quantum approximate optimization algorithm
+
+## Non-linear Solvers
+11. Quantum non-linear solvers 
+12. Quantum non-linear naiver stokes solvers
+13. Quantum non-linear schrodinger solvers
 
 Each algorithm is implemented in Python using the Qiskit library for quantum computing.
 
@@ -54,6 +57,7 @@ The project is structured as follows:
 
 Bosonic Quantum Solvers in these quantum algorithms for Quantum chemistry and Quantum post-quantum cryptography and financial modeling and optimization and quantum machine learning and quantum computing and quantum machine learning and quantum internet and quantum blockchain and quantum internet of things 
 
+## Bosonic Solvers
 - Bosonic-Chemistry Quantum Solvers 
  
 - Bosonic-Post-Quantum-Cryptography Quantum Solvers
