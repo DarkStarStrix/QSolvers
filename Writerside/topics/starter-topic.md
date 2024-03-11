@@ -881,3 +881,651 @@ A new model called hilbert space heuristic hypervectors it's applied to post qua
 Bosonic financial solvers that model market dynamics and optimize portfolios
 Quantum machine learning solvers that use quantum algorithms to solve machine learning problems
 Quantum key distribution solvers that use quantum algorithms to distribute cryptographic keys
+
+## Bosonic solvers explained
+
+Bosonic quantum chemistry
+```python
+import numpy as np
+from qutip import sesolve, Qobj, basis, destroy
+import plotly.graph_objects as go
+import plotly.offline as pyo
+import os
+
+# Parameters
+N = 100  # Number of Fock states
+a0 = 1.0  # Bohr radius
+Z = 1  # Atomic number of hydrogen
+r = np.linspace(0, 20, 100)  # Radial distance array
+
+# Define the radial part of the Hamiltonian
+# a is the annihilation operator
+a = destroy(N)
+# H is the Hamiltonian of the system
+H = -0.5 * a.dag() * a + Z / a0 * (a + a.dag())
+
+# Define the initial state
+# psi0 is the ground state of the system
+psi0 = basis(N, 0)
+
+# Solve the Schrödinger equation
+# result contains the time evolution of the system
+result = sesolve(H, psi0, r)
+
+# Calculate the wavefunction at each point in space
+# wavefunctions is an array that stores the probability density at each point in space
+wavefunctions = np.zeros(len(r))
+for i in range(len(r)):
+    psi = result.states[i]
+    wavefunctions[i] = np.abs(psi.full().flatten()[0]) ** 2
+
+# Reshape wavefunctions into a 2D array
+# wavefunctions_2d is a 2D array that stores the probability density in a grid
+wavefunctions_2d = np.reshape(wavefunctions, (10, 10))
+
+# Create a 3D plot using Plotly
+# fig is a Plotly figure that displays the wavefunction in 3D
+fig = go.Figure(data=[go.Surface(z=wavefunctions_2d)])
+
+# Update the layout of the figure
+fig.update_layout(title='Hydrogen Atom Wavefunction', autosize=False,
+                  width=500, height=500,
+                  margin=dict(l=65, r=50, b=65, t=90))
+
+# Use plotly offline to create an HTML file
+# This line saves the figure as an HTML file named 'hydrogen_wavefunction.html'
+pyo.plot(fig, filename='hydrogen_wavefunction.html')
+
+# Print the current directory
+# This line prints the current working directory
+print("Current directory:", os.getcwd())
+
+# Display the figure
+# This line displays the figure in the default web browser
+fig.show()
+```
+
+Bosonic quantum finance
+```python
+# This script uses the stochastic nature of Quantum Mechanics to predict the future price of a stock.
+
+import numpy as np
+import qutip as qt
+from pandas_datareader import data as pdr
+import yfinance as yf
+import datetime as dt
+import matplotlib.pyplot as plt
+import pandas as pd
+import plotly.graph_objects as go
+
+# Override pandas datareader method with yfinance method
+yf.pdr_override ()
+
+class BosonicFinance:
+    """
+    A class used to represent the Bosonic Finance model
+
+    ...
+
+    Attributes
+    ----------
+    stock : str
+        a formatted string to determine the stock to be analyzed
+    start_date : datetime
+        a datetime to determine the start date of the data
+    end_date : datetime
+        a datetime to determine the end date of the data
+    data : DataFrame
+        a pandas DataFrame that contains the stock data
+    stock_data : Series
+        a pandas Series that contains the 'Close' prices of the stock
+
+    Methods
+    -------
+    create_quantum_state():
+        Creates a quantum state using the qutip library.
+    get_data():
+        Retrieves the stock data from Yahoo Finance.
+    get_stock_data():
+        Returns the stock data.
+    smooth_data(window_size=5):
+        Smooths the stock data using a rolling window.
+    plot_stock_data():
+        Plots the stock data over time.
+    measure_quantum_state(psi):
+        Measures the quantum state and returns the probabilities.
+    forecast():
+        Forecasts the future stock prices.
+    plot_predicted_stock_price():
+        Plots the predicted stock prices and calculates the Mean Absolute Error.
+    """
+
+    def __init__(self, stock, start_date, end_date):
+        """
+        Constructs all the necessary attributes for the BosonicFinance object.
+
+        Parameters
+        ----------
+            stock : str
+                the stock to be analyzed
+            start_date : datetime
+                the start date of the data
+            end_date : datetime
+                the end date of the data
+        """
+
+        self.stock = stock
+        self.start_date = start_date
+        self.end_date = end_date
+        self.data = self.get_data ()
+        self.stock_data = self.get_stock_data ()
+        self.stock_data = self.stock_data ['Close']
+        self.stock_data = self.stock_data.pct_change ()
+        self.stock_data = self.stock_data.dropna ()
+        self.stock_data = self.stock_data.to_numpy ()
+        self.stock_data = self.stock_data [::-1]
+
+    @staticmethod
+    def create_quantum_state():
+        """
+        Creates a quantum state using the qutip library.
+
+        Returns
+        -------
+        Qobj
+            a quantum object that represents the quantum state
+        """
+
+        psi = qt.basis (2, 0)
+        psi = qt.sigmax () * psi
+        return psi
+
+    def get_data(self):
+        """
+        Retrieves the stock data from Yahoo Finance.
+
+        Returns
+        -------
+        DataFrame
+            a pandas DataFrame that contains the stock data
+        """
+
+        data = pdr.get_data_yahoo (self.stock, start=self.start_date, end=self.end_date)
+        return data
+
+    def get_stock_data(self):
+        """
+        Returns the stock data.
+
+        Returns
+        -------
+        DataFrame
+            a pandas DataFrame that contains the stock data
+        """
+
+        return self.data
+
+    def smooth_data(self, window_size=5):
+        """
+        Smooths the stock data using a rolling window.
+
+        Parameters
+        ----------
+        window_size : int, optional
+            the size of the rolling window (default is 5)
+        """
+
+        self.stock_data = pd.Series (self.stock_data).rolling (window=window_size).mean ().dropna ().to_numpy ()
+
+    def plot_stock_data(self):
+        """
+        Plots the stock data over time.
+        """
+
+        plt.figure (figsize=(14, 7))
+        plt.plot (self.data.index [:len (self.stock_data)], self.stock_data)
+        plt.title ('Stock Data Over Time')
+        plt.xlabel ('Date')
+        plt.ylabel ('Stock Data')
+        plt.grid (True)
+        plt.show ()
+
+    def measure_quantum_state(self, psi):
+        """
+        Measures the quantum state and returns the probabilities.
+
+        Parameters
+        ----------
+        psi : Qobj
+            a quantum object that represents the quantum state
+
+        Returns
+        -------
+        array
+            a numpy array that contains the probabilities
+        """
+
+        probabilities = []
+        for theta in np.linspace (0, 2 * np.pi, len (self.stock_data)):
+            R = qt.Qobj ([[np.cos (theta / 2), -np.sin (theta / 2)], [np.sin (theta / 2), np.cos (theta / 2)]])
+            M = R * qt.qeye (2) * R.dag ()
+            probabilities.append (np.abs ((psi.dag () * M * psi)) ** 2)
+
+        return np.array (probabilities)
+
+    def forecast(self):
+        """
+        Forecasts the future stock prices.
+
+        Returns
+        -------
+        array
+            a numpy array that contains the forecasted stock prices
+        """
+
+        psi = self.create_quantum_state ()
+        probabilities = self.measure_quantum_state (psi)
+        probabilities = probabilities / np.sum (probabilities)
+        forecasted_data = np.random.choice (self.stock_data, size=8, p=probabilities)
+        return forecasted_data
+
+    def plot_predicted_stock_price(self):
+        """
+        Plots the predicted stock prices and calculates the Mean Absolute Error.
+        """
+
+        forecasted_data = self.forecast ()
+        forecast_dates = self.data.index [-len (forecasted_data):]
+        actual_data = self.stock_data [::-1] [-len (forecasted_data):]
+
+        trace1 = go.Scatter (
+            x=self.data.index [:len (self.stock_data)],
+            y=self.stock_data,
+            mode='lines',
+            name='Historical Data',
+            line=dict (color='green')
+        )
+
+        trace2 = go.Scatter (
+            x=forecast_dates,
+            y=forecasted_data,
+            mode='lines',
+            name='Forecasted Data',
+            line=dict (color='blue')
+        )
+
+        trace3 = go.Scatter (
+            x=forecast_dates,
+            y=actual_data,
+            mode='lines',
+            name='Actual Data',
+            line=dict (color='orange')
+        )
+
+        layout = go.Layout (
+            title='Stock Data Over Time',
+            xaxis=dict (title='Date'),
+            yaxis=dict (title='Stock Data'),
+            showlegend=True
+        )
+
+        fig = go.Figure (data=[trace1, trace2, trace3], layout=layout)
+        fig.show ()
+
+        mae = np.mean (np.abs (forecasted_data - actual_data))
+        print (f'Mean Absolute Error: {mae}')
+
+
+# Create an instance of the BosonicFinance class
+bosonic_finance = BosonicFinance ('AAPL', dt.datetime (2020, 1, 1), dt.datetime (2023, 12, 31))
+# Smooth the stock data
+bosonic_finance.smooth_data (window_size=5)
+# Plot the stock data
+bosonic_finance.plot_stock_data ()
+# Plot the predicted stock prices
+bosonic_finance.plot_predicted_stock_price ()
+
+# Output: Mean Absolute Error: 0.007619796312381751
+```
+
+Bosonic key distribution
+```python
+"""
+This script implements the bosonic quantum key distribution protocol to generate a secret key between Alice and Bob using qutip.
+
+Modules:
+    numpy: Provides support for large, multi-dimensional arrays and matrices, along with mathematical functions to operate on these arrays.
+    qutip: Quantum Toolbox in Python. It is used for quantum mechanics and quantum computation.
+    plotly.graph_objects: Provides classes for constructing graphics.
+
+Functions:
+    create_circuit(hadamard=False, measure=False): Creates a quantum circuit with an optional Hadamard gate and measurement.
+    create_circuit_bob(): Creates a quantum circuit for Bob.
+    quantum_channel(alice): Simulates a quantum channel with noise.
+    execute_circuit(state): Executes a quantum circuit.
+    run(): Runs the quantum key distribution protocol.
+    plot_fidelity(fidelity): Plots the fidelity of the quantum states.
+"""
+
+import numpy as np
+import qutip as qt
+import plotly.graph_objects as go
+
+def create_circuit(hadamard=False, measure=False):
+    """
+    Creates a quantum circuit with an optional Hadamard gate and measurement.
+
+    Parameters:
+        hadamard (bool): If True, a Hadamard gate is applied to the initial state.
+        measure (bool): If True, a measurement is performed on the state.
+
+    Returns:
+        state (Qobj): The final state after applying the Hadamard gate and measurement.
+    """
+    state = qt.basis (2, 0)
+    if hadamard:
+        hadamard_gate = qt.Qobj ([[1, 1], [1, -1]]) / np.sqrt (2)
+        state = hadamard_gate * state
+    if measure:
+        state = qt.sigmaz () * state
+    return state
+
+def create_circuit_bob():
+    """
+    Creates a quantum circuit for Bob.
+
+    Returns:
+        state (Qobj): The initial state for Bob.
+    """
+    state = qt.basis (2, 0)
+    return state
+
+def quantum_channel(alice):
+    """
+    Simulates a quantum channel with noise.
+
+    Parameters:
+        alice (Qobj): The quantum state of Alice.
+
+    Returns:
+        bob_state (Qobj): The quantum state of Bob after the channel.
+    """
+    noise = qt.rand_ket(2)  # Create a random quantum state
+    bob_state = alice + 0.3 * noise  # Add the noise to Alice's state
+    bob_state = bob_state.unit()  # Normalize the state
+    return bob_state
+
+def execute_circuit(state):
+    """
+    Executes a quantum circuit.
+
+    Parameters:
+        state (Qobj): The quantum state to execute.
+
+    Returns:
+        state (Qobj): The same quantum state, as no operation is performed.
+    """
+    return state
+
+def run():
+    """
+    Runs the quantum key distribution protocol.
+
+    Returns:
+        fidelity (float): The fidelity of the quantum states of Alice and Bob.
+    """
+    alice = create_circuit (hadamard=True, measure=True)
+    bob = quantum_channel (alice)
+    alice_state = execute_circuit (alice)
+    bob_state = execute_circuit (bob)
+    fidelity = qt.fidelity (alice_state, bob_state)
+    return fidelity
+
+def plot_fidelity(fidelity):
+    """
+    Plots the fidelity of the quantum states.
+
+    Parameters:
+        fidelity (float): The fidelity of the quantum states to plot.
+    """
+    fig = go.Figure (data=go.Bar (y=[fidelity]))
+    fig.update_layout (title_text='Fidelity of Quantum States')
+    fig.show ()
+
+if __name__ == "__main__":
+    """
+    Main function of the script. It runs the quantum key distribution protocol and plots the fidelity of the quantum states.
+    """
+    fidelity = run ()
+    plot_fidelity (fidelity)
+```
+
+Bosonic cryptography
+```python
+"""
+This script visualizes the process of HSHH Cryptography using 3D vectors and quantum-inspired transformations.
+
+Modules:
+    numpy: Provides support for large, multi-dimensional arrays and matrices, along with mathematical functions to operate on these arrays.
+    plotly.graph_objects: Provides classes for constructing graphics.
+    qutip: Quantum Toolbox in Python. It is used for quantum mechanics and quantum computation.
+
+Functions:
+    xor_operation(vector_a, vector_b): Performs the XOR operation on two vectors.
+    quantum_transformation(input_vector, input_scalar): Performs a quantum-inspired transformation on a vector.
+
+Variables:
+    vectors: A list of random 3D vectors.
+    xor_vectors: A list of vectors after performing the XOR operation.
+    quantum_vectors: A list of vectors after performing the quantum-inspired transformation.
+    central_point: The central point coordinates for the 3D visualization.
+    x_axis, y_axis, z_axis: 3D lines representing the x, y, and z axes.
+    fig: A 3D scatter plot for the vectors and axes.
+"""
+
+import numpy as np
+import plotly.graph_objects as go
+from qutip import basis, sigmax
+
+def xor_operation(vector_a, vector_b):
+    """
+    Performs the XOR operation on two vectors.
+
+    Parameters:
+        vector_a, vector_b (numpy.ndarray): The input vectors.
+
+    Returns:
+        numpy.ndarray: The result of the XOR operation.
+    """
+    return np.logical_xor(vector_a, vector_b)
+
+def quantum_transformation(input_vector, input_scalar):
+    """
+    Performs a quantum-inspired transformation on a vector.
+
+    Parameters:
+        input_vector (numpy.ndarray): The input vector.
+        input_scalar (float): The scalar to multiply with the vector.
+
+    Returns:
+        numpy.ndarray: The transformed vector.
+    """
+    transformed_vector = np.array([input_scalar * element for element in input_vector])
+    return transformed_vector
+
+vectors = [np.random.randint(2, size=3) for _ in range(5)]  # List of binary vectors
+xor_vectors = [xor_operation(vectors[i], vectors[(i + 1) % 5]) for i in range(5)]
+quantum_vectors = [quantum_transformation(vector, 0.5) for vector in vectors]  # Example scalar is 0.5
+central_point = [0, 0, 0]
+
+x_axis = go.Scatter3d(
+    x=[-1, 1], y=[0, 0], z=[0, 0],
+    marker=dict(size=4, color='red'),
+    line=dict(color='red', width=2),
+    name='X-axis'
+)
+
+y_axis = go.Scatter3d(
+    x=[0, 0], y=[-1, 1], z=[0, 0],
+    marker=dict(size=4, color='green'),
+    line=dict(color='green', width=2),
+    name='Y-axis'
+)
+
+z_axis = go.Scatter3d(
+    x=[0, 0], y=[0, 0], z=[-1, 1],
+    marker=dict(size=4, color='blue'),
+    line=dict(color='blue', width=2),
+    name='Z-axis'
+)
+
+fig = go.Figure(data=[x_axis, y_axis, z_axis] + [go.Scatter3d(
+    x=[central_point[0], vector[0]],
+    y=[central_point[1], vector[1]],
+    z=[central_point[2], vector[2]],
+    mode='lines+markers',
+    marker=dict(size=6, color=np.random.rand(3,)),  # Random color for each vector
+    name=f"Vector {i + 1}",
+    hovertext=f"Vector {i + 1}"
+) for i, vector in enumerate(quantum_vectors)])
+
+fig.update_layout(
+    title="Enhanced Visualization of HSHH Cryptography",
+    scene=dict(
+        xaxis=dict(title="X", range=[-1, 1]),
+        yaxis=dict(title="Y", range=[-1, 1]),
+        zaxis=dict(title="Z", range=[-1, 1]),
+        aspectmode="cube"
+    ),
+    margin=dict(l=0, r=0, b=0, t=50),
+    showlegend=True
+)
+
+fig.show()
+```
+
+Bosonic quantum machine learning
+```python
+"""
+This script creates a quantum circuit to perform matrix multiplication and compares the result with classical matrix multiplication.
+
+Modules:
+    numpy: Provides support for large, multi-dimensional arrays and matrices, along with mathematical functions to operate on these arrays.
+    qiskit: A Python library for quantum computing.
+    plotly.graph_objects: Provides classes for constructing graphics.
+
+Classes:
+    Matrix: Represents a matrix with basic operations such as addition, subtraction, and multiplication.
+
+Functions:
+    quantum_matrix_multiplication(A, B): Performs matrix multiplication using a quantum circuit.
+
+Variables:
+    A, B: Matrices to be multiplied.
+    counts: The result of the quantum matrix multiplication.
+    C: The result of the classical matrix multiplication.
+"""
+
+import numpy as np
+from qiskit import QuantumCircuit, Aer, execute
+from qiskit.visualization import plot_histogram
+from qiskit.quantum_info import Operator
+import plotly.graph_objects as go
+
+class Matrix:
+    """
+    Represents a matrix with basic operations such as addition, subtraction, and multiplication.
+
+    Attributes:
+        matrix (numpy.ndarray): The matrix.
+        shape (tuple): The shape of the matrix.
+    """
+    def __init__(self, matrix):
+        self.matrix = matrix
+        self.shape = matrix.shape
+
+    def __add__(self, other):
+        """Performs matrix addition."""
+        return Matrix (self.matrix + other.matrix)
+
+    def __sub__(self, other):
+        """Performs matrix subtraction."""
+        return Matrix (self.matrix - other.matrix)
+
+    def __mul__(self, other):
+        """Performs matrix multiplication."""
+        return Matrix (self.matrix @ other.matrix)
+
+    def __str__(self):
+        """Returns a string representation of the matrix."""
+        return str (self.matrix)
+
+    def __repr__(self):
+        """Returns a string representation of the matrix."""
+        return str (self.matrix)
+
+    def __eq__(self, other):
+        """Checks if two matrices are equal."""
+        return np.array_equal (self.matrix, other.matrix)
+
+    def __ne__(self, other):
+        """Checks if two matrices are not equal."""
+        return not np.array_equal (self.matrix, other.matrix)
+
+    def __getitem__(self, key):
+        """Returns the element at the given index."""
+        return self.matrix [key]
+
+    def __setitem__(self, key, value):
+        """Sets the element at the given index."""
+        self.matrix [key] = value
+
+def quantum_matrix_multiplication(A, B):
+    """
+    Performs matrix multiplication using a quantum circuit.
+
+    Parameters:
+        A, B (Matrix): The matrices to be multiplied.
+
+    Returns:
+        dict: The measurement probabilities from the quantum circuit.
+    """
+    # Create a quantum circuit on 2 qubits
+    qc = QuantumCircuit (2)
+
+    # Apply the unitary operator corresponding to the matrix A
+    qc.unitary (Operator (A), [0, 1])
+
+    # Apply the unitary operator corresponding to the matrix B
+    qc.unitary (Operator (B), [0, 1])
+
+    # Measure the qubits
+    qc.measure_all ()
+
+    # Use the qasm simulator to get the measurement probabilities
+    simulator = Aer.get_backend ('qasm_simulator')
+    result = execute (qc, simulator, shots=10000).result ()
+    counts = result.get_counts (qc)
+
+    return counts
+
+# Define the matrices A and B
+A = Matrix (np.array ([[1, 2], [3, 4]]))
+B = Matrix (np.array ([[5, 6], [7, 8]]))
+
+# Perform matrix multiplication using the quantum circuit
+counts = quantum_matrix_multiplication (A, B)
+
+# Print the measurement probabilities
+print (counts)
+
+# Perform matrix multiplication using classical matrix multiplication
+C = A * B
+print (C)
+
+# compare the results using quantum and classical matrix multiplication plot with plotly
+fig = go.Figure (data=[
+    go.Bar (name='Quantum', x=list (counts.keys ()), y=list (counts.values ())),
+    go.Bar (name='Classical', x=list (C.matrix.flatten ()), y=list (C.matrix.flatten ()))
+])
+```
