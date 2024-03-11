@@ -4,13 +4,16 @@ This project aims to solve the Traveling Salesman Problem (TSP) using various qu
 Quantum Industrial Solver SDK A proprietary solution for complex industrial problems, from logistics optimization to advanced data analysis.
 
 ## How it works
-_The library works by using quantum algorithms to optimize the traveling salesman problem for logistics and other industrial problems. 
+The library works by using quantum algorithms to optimize the traveling salesman problem for logistics and other industrial problems. 
 The library uses a variety of quantum algorithms to solve the problem, including quantum genetic algorithms, quantum convex hull algorithms, quantum annealing, quantum A* algorithms, quantum particle swarm optimization, quantum ant colony optimization, quantum approximate optimization algorithms, quantum non-linear solvers, quantum non-linear naiver stokes solvers, and quantum non-linear schrodinger solvers. 
+
 The library is designed to be easy to use and can be used to solve a variety of industrial problems.
 If you are a business owner or a logistics manager, you can use the library to optimize your logistics and supply chain operations. 
 by inputting into the library the locations of your warehouses and the locations of your customers, the library will output the optimal route for your delivery trucks to take.
+
 The library can also be used to optimize other industrial problems, if you have a complex industrial problem that you need to solve, you can use the library to solve it you can also use the library to optimize your industrial processes, the library can be used to optimize your industrial processes by inputting into the library the parameters of your industrial processes, the library will output the optimal parameters for your industrial processes.
 and also you can upload your data to the library and the library will output the optimal route for your delivery trucks to take.
+
 If you are a user you can input any parameters and the library will output the optimal parameters for your industrial processes.
 users who are affiliated with the library such as being part of the business that uses the library  and has a subscription to the library can use the library to solve their industrial problems. without payment
 for businesses they get unlimited access to the library and can use the library to solve their industrial problems. and users get 10 runs access to the non-linear solvers and exclusive research and development access to the library.
@@ -20,16 +23,19 @@ and a 45-minute call to discuss the library and for the business to get a better
 
 The project uses the following quantum hybrid algorithms:
 
+## Logistics Solvers
 1. Quantum Genetic Algorithm
 2. Quantum Convex Hull Algorithm
 3. Quantum Annealing
-4. Quantum A* Algorithm
-5. quantum particle swarm optimization
-6. Quantum ant colony optimization
-7. Quantum approximate optimization algorithm
-8. Quantum non-linear solvers 
-9. Quantum non-linear naiver stokes solvers
-10. Quantum non-linear schrodinger solvers
+5. Quantum A* Algorithm
+6. quantum particle swarm optimization
+7. Quantum ant colony optimization
+9. Quantum approximate optimization algorithm
+
+## Non-linear Solvers
+11. Quantum non-linear solvers 
+12. Quantum non-linear naiver stokes solvers
+13. Quantum non-linear schrodinger solvers
 
 Each algorithm is implemented in Python using the Qiskit library for quantum computing.
 
@@ -38,19 +44,30 @@ Each algorithm is implemented in Python using the Qiskit library for quantum com
 The project is structured as follows:
 
 - `Quantum_Genetic_Algorithm.py`: This file contains the implementation of the Quantum Genetic Algorithm for the TSP.
+  
 - `Quantum_Convex.py`: This file contains the implementation of the Quantum Convex Hull Algorithm for the TSP.
+  
 - `Quantum_Annealing.py`: This file contains the implementation of Quantum Annealing for the TSP.
+  
 - `Quantum_A.py`: This file contains the implementation of the Quantum A* Algorithm for the TSP.
+  
 - `Quantum_Particle_Swarm_Optimization.py`: This file contains the implementation of the Quantum Particle Swarm Optimization for the TSP.
+  
 - `Quantum_Ant_Colony_Optimization.py`: This file contains the implementation of the Quantum Ant Colony Optimization for the TSP.
+  
 - `Quantum_Approximate_Optimization_Algorithm.py`: This file contains the implementation of the Quantum Approximate Optimization Algorithm for the TSP.
+  
 - `Quantum_Non_Linear_Solvers.py`: This file contains the implementation of the Quantum Non-Linear Solvers for the TSP.
+  
 - `Quantum_Non_Linear_Naiver_Stokes_Solvers.py`: This file contains the implementation of the Quantum Non-Linear Naiver Stokes Solvers for the TSP.
+  
 - `Quantum_Non_Linear_Schrodinger_Solvers.py`: This file contains the implementation of the Quantum Non-Linear Schrödinger Solvers for the TSP.
+  
 -  These files contain the implementation of the quantum hybrid algorithms for the TSP. Each file contains a class that implements the algorithm and a main function that runs the algorithm on a sample TSP problem.
 
 Bosonic Quantum Solvers in these quantum algorithms for Quantum chemistry and Quantum post-quantum cryptography and financial modeling and optimization and quantum machine learning and quantum computing and quantum machine learning and quantum internet and quantum blockchain and quantum internet of things 
 
+## Bosonic Solvers
 - Bosonic-Chemistry Quantum Solvers 
  
 - Bosonic-Post-Quantum-Cryptography Quantum Solvers
