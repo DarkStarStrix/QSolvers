@@ -70,7 +70,7 @@ def variable_neighborhood_search(self, children):
 ```
 
 
-4. ## Quantum Convex Hull Algorithm
+## Quantum Convex Hull Algorithm
 
 The Quantum Convex Hull Algorithm is a quantum algorithm for finding the convex hull of a set of points. It uses quantum parallelism to explore all possible subsets of points simultaneously.
 The provided code is a Python implementation of a Quantum Convex Hull Algorithm for solving the Traveling Salesman Problem (TSP). The TSP is a classic algorithmic problem in the field of computer science and operations research focusing on optimization. 
