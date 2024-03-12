@@ -73,9 +73,13 @@ def variable_neighborhood_search(self, children):
 ## Quantum Convex Hull Algorithm
 
 The Quantum Convex Hull Algorithm is a quantum algorithm for finding the convex hull of a set of points. It uses quantum parallelism to explore all possible subsets of points simultaneously.
+
 The provided code is a Python implementation of a Quantum Convex Hull Algorithm for solving the Traveling Salesman Problem (TSP). The TSP is a classic algorithmic problem in the field of computer science and operations research focusing on optimization. 
+
 In this problem, a salesman is given a list of cities and must determine the shortest route that allows him to visit each city once and return to his original location.  The code begins by defining a function create_circuit(distances). 
+
 This function takes a list of distances between cities as input and returns a quantum circuit. The quantum circuit is created using the Qiskit library, which is a Python library for quantum computing. The function first creates a quantum register and a classical register, each with a number of qubits/bits equal to the number of cities. 
+
 It then applies a Hadamard gate to all qubits, creating a superposition of states. After that, it applies a controlled phase rotation gate between each pair of qubits, with the phase being determined by the distance between the corresponding cities. 
 Finally, it applies another Hadamard gate to all qubits and measures the result.
 ```python
@@ -95,7 +99,9 @@ qc.barrier()
 qc.measure(q, c)
 ```
 The code then defines an optimizer and a quantum instance for execution. 
+
 The optimizer is used to find the optimal parameters for the quantum circuit, and the quantum instance specifies where and how the quantum circuit should be run. 
+
 In this case, the optimizer is COBYLA with a maximum of 1000 iterations, and the quantum instance is a simulator provided by Qiskit.
 ```python
 optimizer = COBYLA(maxiter=1000)
@@ -103,6 +109,7 @@ backend = Aer.get_backend('qasm_simulator')
 quantum_instance = QuantumInstance(backend, shots=1000)
 ```
 Next, the code defines a QuadraticProgram representing the TSP problem. A QuadraticProgram is a mathematical optimization model that allows you to specify an optimization problem in terms of decision variables, an objective function, and various constraints. 
+
 The code then creates an Ising Hamiltonian for the given QuadraticProgram. The Ising Hamiltonian is a mathematical representation of the energy of a system of interacting spins, and it is used in the Variational Quantum Eigensolver (VQE) algorithm to find the ground state energy of the system.
 ```python
 quadratic_program = QuadraticProgram()
@@ -130,8 +137,13 @@ def refine_solution(x):
 ## Quantum Annealing
 
 Quantum Annealing is a metaheuristic for finding the global minimum of a given objective function over a given set of candidate solutions. It uses quantum fluctuations to escape local minima in the search space.
-The provided code is a Python implementation of a Quantum Ant Colony Optimization (QACO) algorithm for solving the Traveling Salesman Problem (TSP). The TSP is a classic algorithmic problem in the field of computer science and operations research focusing on optimization. In this problem, a salesman is given a list of cities and must determine the shortest route that allows him to visit each city once and return to his original location.  
+
+The provided code is a Python implementation of a Quantum Ant Colony Optimization (QACO) algorithm for solving the Traveling Salesman Problem (TSP). 
+
+The TSP is a classic algorithmic problem in the field of computer science and operations research focusing on optimization. In this problem, a salesman is given a list of cities and must determine the shortest route that allows him to visit each city once and return to his original location.  
+
 The code begins by defining a method _create_qubo(self). This method creates a Quadratic Unconstrained Binary Optimization (QUBO) problem for the TSP. 
+
 The QUBO problem is represented as a dictionary where the keys are tuples representing the nodes (i, j), and the values are the weights of the edges between these nodes. The method iterates over all pairs of nodes and assigns the weight of the edge between them to the corresponding key in the QUBO dictionary.
 ```python
 QUBO = {}
@@ -153,6 +165,7 @@ solution = response.first.sample
 route = [node for node, bit in solution.items() if bit == 1]
 ```
 Finally, the plot_route(self, route) method visualizes the solution to the TSP. It uses the NetworkX and Matplotlib libraries to draw the graph and highlight the nodes that are included in the solution. 
+
 The nx.  Draw function is used to draw the graph, and the nx.draw_networkx_nodes function is used to highlight the nodes in the solution.
 ```python
 pos = nx.spring_layout(self.graph)
@@ -163,7 +176,10 @@ nx.draw_networkx_labels(self.graph, pos, labels=labels)
 plt.title("TSP Route")
 plt.show()
 ```
-In summary, this code uses a Quantum Ant Colony Optimization (QACO) algorithm to solve the TSP. The QACO algorithm is a quantum version of the classical Ant Colony Optimization (ACO) algorithm, which is a probabilistic technique for solving computational problems which can be reduced to finding good paths through graphs. 
+In summary, this code uses a Quantum Ant Colony Optimization (QACO) algorithm to solve the TSP. 
+
+The QACO algorithm is a quantum version of the classical Ant Colony Optimization (ACO) algorithm, which is a probabilistic technique for solving computational problems which can be reduced to finding good paths through graphs. 
+
 The quantum version of the algorithm uses quantum annealing to find the optimal solution.
 
 
@@ -172,7 +188,9 @@ The quantum version of the algorithm uses quantum annealing to find the optimal 
 The Quantum A* Algorithm is a quantum version of the classical A* search algorithm. It uses a quantum heuristic function to guide the search process, which can potentially explore the search space more efficiently.
 
 The provided code is a Python implementation of the Quantum A* Algorithm for solving the Traveling Salesman Problem (TSP). The TSP is a classic algorithmic problem in the field of computer science and operations research focusing on optimization. 
+
 In this problem, a salesman is given a list of cities and must determine the shortest possible route that visits each city once and returns to the origin city.  The QuantumAStar class is initialized with a tsp object, which represents the TSP problem to be solved. 
+
 The initialization method also sets up various attributes such as the start city, the list of cities, the number of cities, and the distance matrix. 
 It then calls the make_qc method to create a quantum circuit for the given TSP problem.
 ```python
@@ -188,7 +206,9 @@ def __init__(self, tsp):
     self.make_qc ()
 ```
 The make_qc method creates a quantum circuit with the number of qubits and classical bits equal to the number of cities. 
+
 It applies a Hadamard gate to all qubits to create a superposition of states. Then, it applies a controlled phase rotation gate between each pair of qubits, with the phase being determined by the distance between the corresponding cities. 
+
 After another Hadamard gate and a barrier, it measures all qubits.
 ```python
 def make_qc(self):
@@ -249,7 +269,9 @@ The Quantum A* Algorithm is a quantum version of the classical A* algorithm, whi
 ## Quantum Particle Swarm Optimization
 
 Quantum Particle Swarm Optimization is a variant of the classical particle swarm optimization algorithm that uses quantum mechanics principles. It uses a swarm of particles that move in the search space according to quantum rules.
+
 The provided code is a Python implementation of the Quantum Particle Swarm Optimization (QPSO) algorithm. The QPSO algorithm is a quantum version of the classical Particle Swarm Optimization (PSO) algorithm, which is a computational method that optimizes a problem by iteratively trying to improve a candidate solution with regard to a given measure of quality. 
+
 The code is divided into two classes: QuantumParticle and QuantumSwarm.  The QuantumParticle class represents a quantum particle in the QPSO algorithm. Each quantum particle is represented by a quantum circuit. 
 The quantum circuit is created with a number of qubits equal to the number of cities in the problem. The __init__ method initializes the quantum circuit by applying a Hadamard gate to all qubits to create a superposition of states, and then measures all qubits.
 ```python
@@ -280,8 +302,11 @@ The QPSO algorithm is a quantum version of the classical Particle Swarm Optimiza
 ## Quantum Ant Colony Optimization
 
 Quantum Ant Colony Optimization is a variant of the classical ant colony optimization algorithm that uses quantum mechanics principles. It uses a colony of quantum ants that move in the search space according to quantum rules.
+
 The provided code is a Python implementation of the Quantum Ant Colony Optimization (QACO) algorithm. The QACO algorithm is a quantum version of the classical Ant Colony Optimization (ACO) algorithm, which is a probabilistic technique for solving computational problems which can be reduced to finding good paths through graphs.  
-The code is divided into two classes: QuantumAnt and QuantumAntColony.  The QuantumAnt class represents a quantum ant in the QACO algorithm. Each quantum ant is represented by a quantum circuit. The quantum circuit is created with a number of qubits equal to the number of cities in the problem. 
+The code is divided into two classes: QuantumAnt and QuantumAntColony.  
+
+The QuantumAnt class represents a quantum ant in the QACO algorithm. Each quantum ant is represented by a quantum circuit. The quantum circuit is created with a number of qubits equal to the number of cities in the problem. 
 The __init__ method initializes the quantum circuit by applying a Hadamard gate to all qubits to create a superposition of states, and then measures all qubits.
 ```python
 def __init__(self, num_qubits):
@@ -307,12 +332,15 @@ def run(self):
 ```
 In summary, this code uses a Quantum Ant Colony Optimization (QACO) algorithm to solve the Traveling Salesman Problem (TSP). 
 The QACO algorithm is a quantum version of the classical Ant Colony Optimization (ACO) algorithm, which is a probabilistic technique for solving computational problems which can be reduced to finding good paths through graphs. 
+
 The quantum version of the algorithm uses quantum annealing to find the optimal solution.
 
 ## Quantum Approximate Optimization Algorithm
 
 The Quantum Approximate Optimization Algorithm is a quantum algorithm for solving combinatorial optimization problems. It uses a variational approach, where a parameterized quantum circuit is optimized to find the best solution.
+
 The provided code is a Python implementation of the Quantum Approximate Optimization Algorithm (QAOA) for solving the Traveling Salesman Problem (TSP). The QAOA is a quantum algorithm for approximating the solution to optimization problems. The QAOASolver class is the main class implementing the QAOA. 
+
 It is initialized with a graph G representing the TSP, the number of QAOA steps p, and the angles gamma and beta for the Ising interactions and X rotations in the QAOA circuit, respectively.
 ```python
 def __init__(self, G, p, gamma, beta):
@@ -322,7 +350,9 @@ def __init__(self, G, p, gamma, beta):
     self.beta = beta
 ```
 The qaoa_circuit method creates a QAOA circuit for the given TSP problem. It creates a quantum circuit with a quantum register q and a classical register c. 
+
 It then applies a Hadamard gate to all qubits to create a superposition of states. For each pair of connected nodes in the graph, it applies a controlled-Z gate with an angle gamma for the Ising interactions. 
+
 Finally, it applies an X rotation with an angle beta to all qubits and measures all qubits.
 ```python
 def qaoa_circuit(self):
@@ -350,7 +380,9 @@ def run_qaoa(self):
     counts = result.get_counts()
     return counts
 ```
-The solve method solves the TSP using the QAOA algorithm. It first converts the TSP problem to a QuadraticProgram. It then creates a QAOA instance and a MinimumEigenOptimizer to wrap the QAOA instance. It solves the QuadraticProgram using the MinimumEigenOptimizer and returns the result and the most likely sample.
+The solve method solves the TSP using the QAOA algorithm. It first converts the TSP problem to a QuadraticProgram. It then creates a QAOA instance and a MinimumEigenOptimizer to wrap the QAOA instance. 
+
+It solves the QuadraticProgram using the MinimumEigenOptimizer and returns the result and the most likely sample.
 ```python
 def solve(self):
     quadratic_program = self.tsp_to_quadratic_program()
@@ -360,13 +392,21 @@ def solve(self):
     x = result.x
     return x
 ```
-In summary, this code uses the Quantum Approximate Optimization Algorithm (QAOA) to solve the Traveling Salesman Problem (TSP). The QAOA is a quantum algorithm for approximating the solution to optimization problems. It uses a combination of quantum and classical techniques to find the optimal solution.
+In summary, this code uses the Quantum Approximate Optimization Algorithm (QAOA) to solve the Traveling Salesman Problem (TSP). The QAOA is a quantum algorithm for approximating the solution to optimization problems. 
+
+It uses a combination of quantum and classical techniques to find the optimal solution.
 
 ## Quantum Non-Linear Solvers
 
 Quantum Non-Linear Solvers are quantum algorithms for solving non-linear equations. They use quantum mechanics principles to find solutions more efficiently than classical methods.
-The provided code is a Python implementation of Quantum Non-Linear Solvers for solving complex problems such as the Navier-Stokes equations. The Navier-Stokes equations are a set of equations that describe the motion of fluid substances such as liquids and gases. 
-These equations are non-linear partial differential equations and are known for their complexity.  The NavierStokesSolver class is a solver for the Navier-Stokes equations using a non-linear solver. It inherits from a NonLinearSolver class, which is not shown in the provided code. 
+
+The provided code is a Python implementation of Quantum Non-Linear Solvers for solving complex problems such as the Navier-Stokes equations. 
+
+The Navier-Stokes equations are a set of equations that describe the motion of fluid substances such as liquids and gases. 
+These equations are non-linear partial differential equations and are known for their complexity.  
+
+The NavierStokesSolver class is a solver for the Navier-Stokes equations using a non-linear solver. It inherits from a NonLinearSolver class, which is not shown in the provided code. 
+
 The NavierStokesSolver class has two attributes: parameters, which are the parameters for the Navier-Stokes equations, and simulation, which is the simulation of the Navier-Stokes equations.
 ```python
 class NavierStokesSolver(NonLinearSolver):
@@ -380,7 +420,9 @@ The set_params method sets the parameters for the Navier-Stokes equations. The p
 def set_params(self, params):
     self.parameters = params
 ```
-The solve method solves the Navier-Stokes equations. It first assigns the parameters to a local variable navier_stokes_params. Then, it creates a new instance of NavierStokesSolver, initializes it, solves it, and assigns the solver to the simulation attribute.
+The solve method solves the Navier-Stokes equations. It first assigns the parameters to a local variable navier_stokes_params. 
+
+Then, it creates a new instance of NavierStokesSolver, initializes it, solves it, and assigns the solver to the simulation attribute.
 ```python
 def solve(self):
     navier_stokes_params = self.parameters
@@ -394,7 +436,9 @@ The get_solution method gets the solution of the Navier-Stokes equations. It ret
 def get_solution(self):
     return self.simulation
 ```
-The code then defines the parameters for the non-linear Schrödinger equation and the non-linear Navier-Stokes equation. It creates a SchrodingerSolver object and a NavierStokesSolver object, sets the parameters, solves the equations, and gets the solutions.
+The code then defines the parameters for the non-linear Schrödinger equation and the non-linear Navier-Stokes equation. 
+
+It creates a SchrodingerSolver object and a NavierStokesSolver object, sets the parameters, solves the equations, and gets the solutions.
 ```python
 schrodinger_params = {'N': 100, 'L': 10.0}
 navier_stokes_params = {'Nx': 100, 'Ny': 100, 'Nt': 100, 'dt': 0.01, 'T': 1.0, 'Re': 100}
@@ -409,12 +453,18 @@ navier_stokes_solver.set_params(navier_stokes_params)
 navier_stokes_solver.solve()
 navier_stokes_solver.get_solution ()
 ```
-In summary, this code uses Quantum Non-Linear Solvers to solve complex problems such as the Navier-Stokes equations. The solvers are implemented as classes in Python, and the equations are solved by creating instances of these classes, setting the parameters, and calling the solve method. The solutions are then retrieved using the get_solution method.
+In summary, this code uses Quantum Non-Linear Solvers to solve complex problems such as the Navier-Stokes equations. 
+
+The solvers are implemented as classes in Python, and the equations are solved by creating instances of these classes, setting the parameters, and calling the solve method. The solutions are then retrieved using the get_solution method.
 
 ## Quantum Non-Linear Naiver Stokes Solvers
 
-Quantum Non-Linear Naiver Stokes Solvers are quantum algorithms for solving the Naiver-Stokes equations, which describe the motion of fluid substances. They use quantum mechanics principles to solve these equations more efficiently than classical methods.
+Quantum Non-Linear Naiver Stokes Solvers are quantum algorithms for solving the Naiver-Stokes equations, which describe the motion of fluid substances. 
+
+They use quantum mechanics principles to solve these equations more efficiently than classical methods.
+
 The provided code is a Python implementation of a simulation for solving the Navier-Stokes equations using a non-linear solver. The Navier-Stokes equations are a set of equations that describe the motion of fluid substances such as liquids and gases. 
+
 These equations are non-linear partial differential equations and are known for their complexity.  The Simulation class is the main class implementing the simulation. 
 It is initialized with parameters representing the parameters for the Navier-Stokes equations.
 ```python
@@ -452,6 +502,7 @@ In summary, this code uses a non-linear solver to solve the Navier-Stokes equati
 ## Quantum Non-Linear Schrödinger Solvers
 
 Quantum Non-Linear Schrödinger Solvers are quantum algorithms for solving the non-linear Schrödinger equation, which describes the wave function of quantum systems. They use quantum mechanics principles to solve this equation more efficiently than classical methods.
+
 The provided code is a Python implementation of a Quantum Non-Linear Schrödinger Solver. The Non-Linear Schrödinger equation is a fundamental equation in quantum mechanics and optics, and this code uses quantum techniques to solve it.  The code starts by defining the number of basis states N and the length of the space L. 
 It then creates a linear space x from -L/2 to L/2 with N points.
 ```python
@@ -491,9 +542,14 @@ In summary, this code uses a Quantum Non-Linear Schrödinger Solver to solve the
 
 ## Why Quantum Algorithms?
 The use of quantum algorithms in our project is motivated by the potential of quantum computing to solve complex optimization problems more efficiently than classical methods. Quantum algorithms leverage the principles of quantum mechanics to explore large search spaces and find optimal solutions to combinatorial optimization problems.
+
 and the main reason for using quantum algorithms is that they can solve complex optimization problems more efficiently than classical methods. Quantum algorithms leverage the principles of quantum mechanics to explore large search spaces and find optimal solutions to combinatorial optimization problems.
 at least in principle, quantum computers can solve certain problems much faster than classical computers. This is because quantum computers use quantum bits (qubits) instead of classical bits, which allows them to explore multiple possibilities simultaneously.
+
 Quantum algorithms have the potential to revolutionize the field of optimization by providing faster and more accurate solutions to complex problems. They can be used in a wide range of applications, including logistics, finance, and scientific research.
 In our project, we are using quantum algorithms to solve optimization problems such as the Traveling Salesman Problem (TSP) and the Navier-Stokes equations. These problems are known for their complexity and are difficult to solve using classical methods. By leveraging quantum algorithms, we aim to find more efficient and accurate solutions to these problems, which can have significant practical implications.
-and my industrial solver aims to bring the power of quantum computing to a wider audience by providing a user-friendly interface for solving optimization problems using quantum algorithms. By making quantum computing more accessible, we hope to accelerate the adoption of quantum algorithms in various industries and research fields.
+and my industrial solver aims to bring the power of quantum computing to a wider audience by providing a user-friendly interface for solving optimization problems using quantum algorithms. 
+
+By making quantum computing more accessible, we hope to accelerate the adoption of quantum algorithms in various industries and research fields.
+
 applied quantum technologies have the potential to revolutionize industries such as finance, logistics, and scientific research by providing faster and more accurate solutions to complex optimization problems. By leveraging quantum algorithms, we aim to bring the power of quantum computing to a wider audience and accelerate the adoption of quantum technologies in various industries and research fields.
