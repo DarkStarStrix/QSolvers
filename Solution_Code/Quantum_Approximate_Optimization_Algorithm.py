@@ -1,12 +1,8 @@
-import numpy as np
 import networkx as nx
-import matplotlib.pyplot as plt
-from qiskit import Aer, execute
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
+from qiskit import Aer, execute, QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.visualization import plot_histogram
-from qiskit.aqua.algorithms import QAOA, NumPyMinimumEigensolver
+from qiskit.aqua.algorithms import QAOA
 from qiskit.optimization.algorithms import MinimumEigenOptimizer
-from qiskit.optimization import QuadraticProgram
 from qiskit.optimization.applications.ising import tsp
 from qiskit.optimization.applications.ising.common import sample_most_likely
 
@@ -60,8 +56,6 @@ def main():
     solver = QAOASolver (G, p=1, gamma=0.5, beta=0.5)
     counts = solver.run_qaoa ()
     plot_histogram (counts)
-    plt.show ()
-
     result, most_likely = solver.solve ()
     print (result)
     print (most_likely)

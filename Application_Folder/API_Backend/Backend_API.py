@@ -3,7 +3,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Email
 from flask_sqlalchemy import SQLAlchemy
-import gzip
 from textblob import TextBlob
 
 app = Flask (__name__)
@@ -41,40 +40,22 @@ class FeedbackForm (FlaskForm):
 def register():
     form = RegistrationForm ()
     if form.validate_on_submit ():
-        user = User (email=form.email.data)
-        if form.user.data:
-            user.category = 'user'
-        elif form.business.data:
-            user.category = 'business'
+        user = User (email=form.email.data, category='user' if form.user.data else 'business')
         db.session.add (user)
         db.session.commit ()
-        if user.category == 'user':
-            return redirect (url_for ('user', email=user.email))
-        else:
-            return redirect (url_for ('business', email=user.email))
+        return redirect (url_for (user.category, email=user.email))
     return render_template ('register.html', form=form)
 
 
 @app.route ('/user/<email>', methods=['GET', 'POST'])
-def user(email):
-    # Handle form submission and redirect to payment page
-    return render_template ('user.html', email=email)
-
-
 @app.route ('/business/<email>', methods=['GET', 'POST'])
-def business(email):
-    # Handle form submission and redirect to payment page
-    return render_template ('business.html', email=email)
+def user(email):
+    return render_template ('user.html', email=email)
 
 
 @app.route ('/pay/<email>', methods=['GET', 'POST'])
 def pay(email):
-    status = request.args.get ('status')
-    if status == 'success':
-        return render_template ('success.html')
-    elif status == 'failure':
-        return render_template ('failure.html')
-    return render_template ('pay.html', email=email)
+    return render_template (request.args.get ('status', 'pay') + '.html', email=email)
 
 
 @app.route ('/feedback', methods=['GET', 'POST'])
@@ -84,28 +65,8 @@ def feedback():
         feedback = Feedback (user_email=form.email.data, feedback=form.feedback.data)
         db.session.add (feedback)
         db.session.commit ()
-        return redirect (url_for ('index'))
-    return render_template ('feedback.html', form=form)
-
-
-@app.route ('/feedback', methods=['GET', 'POST'])
-def feedback():
-    form = FeedbackForm ()
-    if form.validate_on_submit ():
-        feedback = Feedback (user_email=form.email.data, feedback=form.feedback.data)
-        db.session.add (feedback)
-        db.session.commit ()
-
-        # Save feedback to a compressed text file
-        with gzip.open ('feedback.txt.gz', 'wt') as f:
-            f.write (feedback.feedback)
-
-        # Run sentiment analysis on the feedback
-        blob = TextBlob (feedback.feedback)
-        sentiment = blob.sentiment
-
+        sentiment = TextBlob (feedback.feedback).sentiment
         return {"message": "Feedback received", "sentiment": sentiment}, 201
-
     return render_template ('feedback.html', form=form)
 
 

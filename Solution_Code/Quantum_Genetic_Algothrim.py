@@ -22,15 +22,7 @@ class QuantumTSP:
         self.fitness = []
         self.best_fitness = []
         self.best_individual = []
-        self.cross_over = []
-        self.mutate = []
-        self.variable_neighborhood_search = []
-        self.parents = []
-        self.children = []
         self.calculate_fitness ()
-
-    def initialize_population(self):
-        self.population = [np.random.permutation (len (self.cities)) for _ in range (self.pop_size)]
 
     def calculate_fitness(self):
         self.fitness = [self.calculate_route_length (individual) for individual in self.population]
@@ -72,95 +64,17 @@ class QuantumTSP:
                 child [index1], child [index2] = child [index2], child [index1]
         return children
 
-    def variable_neighborhood_search(self, children):
-        for child in children:
-            if np.random.rand () < self.mutation_rate:
-                self.local_search (child)
-        return children
-
-    def local_search(self, child):
-        # Create a QAOA circuit
-        qaoa = QAOA (optimizer=COBYLA (), p=1, quantum_instance=QuantumInstance (qk.Aer.get_backend ('qasm_simulator')))
-
-        # Define the TSP problem for QAOA
-        tsp_qaoa = tsp.TspData ('tsp', len (self.cities), np.array (self.cities),
-                                self.calculate_distance_matrix (child))
-
-        # Convert the TSP problem to an Ising problem
-        ising_qaoa = tsp.get_operator (tsp_qaoa)
-
-        # Run QAOA on the Ising problem
-        result_qaoa = qaoa.compute_minimum_eigenvalue (ising_qaoa [0])
-
-        # Get the optimal route from the QAOA result
-        optimal_route_qaoa = tsp.get_tsp_solution (result_qaoa)
-
-        # Replace the child with the optimal route
-        child [:] = optimal_route_qaoa
-
     def run(self):
         for _ in range (self.generations):
             parents = self.select_parents ()
             children = self.crossover (parents)
-            children = self.mutate
-            children = self.variable_neighborhood_search
+            children = self.mutate (children)
             self.population = parents + children
             self.calculate_fitness ()
             self.best_fitness.append (np.min (self.fitness))
             self.best_individual.append (self.population [np.argmin (self.fitness)])
 
-    self.best_individual = np.array (self.best_individual)
-
     def plot(self):
-        plt.figure (figsize=(8, 6))
-        x, y = zip (*[self.cities [i] for i in self.best_individual [np.argmin (self.best_fitness)]])
-        plt.plot (x, y, marker='o', linestyle='-')
-        plt.xlabel ('X Coordinate')
-        plt.ylabel ('Y Coordinate')
-        plt.title ('TSP Route')
-        plt.grid (True)
-        plt.show ()
-
-    def plot_fitness(self):
-        plt.figure (figsize=(8, 6))
-        plt.plot (self.best_fitness)
-        plt.xlabel ('Generation')
-        plt.ylabel ('Fitness')
-        plt.title ('Fitness over Generations')
-        plt.grid (True)
-        plt.show ()
-
-    def plot_circuit(self):
-        qr = QuantumRegister (self.num_qubits)
-        cr = ClassicalRegister (self.num_qubits)
-        qc = QuantumCircuit (qr, cr)
-        for i in range (self.num_qubits):
-            qc.h (qr [i])
-        qc.measure (qr, cr)
-        qc.draw (output='mpl')
-        plt.show ()
-
-    def plot_histogram(self):
-        qr = QuantumRegister (self.num_qubits)
-        cr = ClassicalRegister (self.num_qubits)
-        qc = QuantumCircuit (qr, cr)
-        for i in range (self.num_qubits):
-            qc.h (qr [i])
-        qc.measure (qr, cr)
-        qc.draw (output='mpl', style='iqp')
-        plt.show ()
-
-    def plot_cities(self):
-        plt.figure (figsize=(8, 6))
-        x, y = zip (*self.cities)
-        plt.plot (x, y, marker='o', linestyle='')
-        plt.xlabel ('X Coordinate')
-        plt.ylabel ('Y Coordinate')
-        plt.title ('Cities')
-        plt.grid (True)
-        plt.show ()
-
-    def plot_route(self):
         plt.figure (figsize=(8, 6))
         x, y = zip (*[self.cities [i] for i in self.best_individual [np.argmin (self.best_fitness)]])
         plt.plot (x, y, marker='o', linestyle='-')
@@ -177,8 +91,4 @@ if __name__ == "__main__":
               (60, 20), (160, 20)]
     tsp = QuantumTSP (cities, pop_size=100, generations=100, mutation_rate=0.01, elite_size=20, num_qubits=10)
     tsp.run ()
-    tsp.plot_fitness ()
-    tsp.plot_circuit ()
-    tsp.plot_histogram ()
-    tsp.plot_cities ()
-    tsp.plot_route ()
+    tsp.plot ()

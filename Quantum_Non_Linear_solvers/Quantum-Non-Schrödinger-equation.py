@@ -1,9 +1,8 @@
 # Add quantum elements to the non-linear solvers  make a library of quantum non-linear solvers
 
-from qutip import *
+from qutip import destroy, basis, sesolve, wigner
 import numpy as np
 import matplotlib.pyplot as plt
-import plotly.graph_objects as go
 
 # Define the parameters for the non-linear Schrödinger equation
 N = 100
@@ -30,16 +29,3 @@ W = wigner (result.states [-1], xvec, xvec)
 fig, ax = plt.subplots (1, 1, figsize=(10, 10))
 cont = ax.contourf (xvec, xvec, W, 100, cmap="bwr")
 plt.show ()
-
-# Plot the results using plot_wigner using the last state in the result in 3D
-fig = plt.figure (figsize=(10, 10))
-ax = fig.add_subplot (111, projection='3d')
-ax.plot_surface (X, Y, W, rstride=1, cstride=1, cmap="bwr")
-plt.show ()
-
-# Plot the results using plot_wigner using the last state in the result in 3D using plotly
-fig = go.Figure (data=[go.Surface (z=W)])
-fig.update_layout (title='Wigner function', autosize=False,
-                   width=500, height=500,
-                   margin=dict (l=65, r=50, b=65, t=90))
-fig.show ()
