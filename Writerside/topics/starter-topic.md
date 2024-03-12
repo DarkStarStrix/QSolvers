@@ -6,9 +6,13 @@ This project aims to solve the Traveling Salesman Problem (TSP) using various qu
 ## How it works
 The library works by using quantum algorithms to optimize the traveling salesman problem for logistics and other industrial problems. 
 The library uses a variety of quantum algorithms to solve the problem, including quantum genetic algorithms, quantum convex hull algorithms, quantum annealing, quantum A* algorithms, quantum particle swarm optimization, quantum ant colony optimization, quantum approximate optimization algorithms, quantum non-linear solvers, quantum non-linear naiver stokes solvers, and quantum non-linear schrodinger solvers. 
+
 The library is designed to be easy to use and can be used to solve a variety of industrial problems. If you are a business owner or a logistics manager, you can use the library to optimize your logistics and supply chain operations. by inputting into the library the locations of your warehouses and the locations of your customers, the library will output the optimal route for your delivery trucks to take. 
+
 The library can also be used to optimize other industrial problems, if you have a complex industrial problem that you need to solve, you can use the library to solve it you can also use the library to optimize your industrial processes, the library can be used to optimize your industrial processes by inputting into the library the parameters of your industrial processes, the library will output the optimal parameters for your industrial processes. 
+
 and also you can upload your data to the library and the library will output the optimal route for your delivery trucks to take. If you are a user you can input any parameters and the library will output the optimal parameters for your industrial processes. users who are affiliated with the library such as being part of the business that uses the library and has a subscription to the library can use the library to solve their industrial problems. 
+
 without payment for businesses they get unlimited access to the library and can use the library to solve their industrial problems. and users get 10 runs access to the non-linear solvers and exclusive research and development access to the library. and a 45-minute call to discuss the library and for the business to get a better understanding of the library.
 
 ## Algorithms Used
