@@ -1,4 +1,4 @@
-# Bosonic-API.py
+# QSolvers-API.py
 
 from flask import Flask, request, jsonify
 import importlib

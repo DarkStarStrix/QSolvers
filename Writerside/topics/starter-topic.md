@@ -1,5 +1,14 @@
 # How to use the Quantum Industrial Solver SDK
 
+## API docs coming soon
+``
+import QSolvers
+``
+## Installation
+``
+pip install QSolvers
+``
+
 ## Quantum Solvers
 This project aims to solve the Traveling Salesman Problem (TSP) using various quantum hybrid algorithms. The TSP is a well-known combinatorial optimization problem that asks: "Given a list of cities and the distances between each pair of cities, what is the shortest possible route that visits each city exactly once and returns to the origin city?". Quantum Industrial Solver SDK A proprietary solution for complex industrial problems, from logistics optimization to advanced data analysis.
 
@@ -46,7 +55,7 @@ The project is structured as follows:
 Quantum_Genetic_Algorithm.py: This file contains the implementation of the Quantum Genetic Algorithm for the TSP.
 
 ```python
- class QuantumGeneticAlgorithm:
+class QuantumGeneticAlgorithm:
     """
     This class implements a Quantum Genetic Algorithm for the Traveling Salesman Problem (TSP).
     """
@@ -903,7 +912,7 @@ Z = 1  # Atomic number of hydrogen
 r = np.linspace(0, 20, 100)  # Radial distance array
 
 # Define the radial part of the Hamiltonian
-# a is the annihilation operator
+# an is the annihilation operator
 a = destroy(N)
 # H is the Hamiltonian of the system
 H = -0.5 * a.dag() * a + Z / a0 * (a + a.dag())
@@ -978,8 +987,7 @@ class BosonicFinance:
     start_date : datetime
         a datetime to determine the start date of the data
     end_date : datetime
-        a datetime to determine the end date of the data
-    data : DataFrame
+        a datetime to determine the end date of the data     : DataFrame
         a pandas DataFrame that contains the stock data
     stock_data : Series
         a pandas Series that contains the 'Close' prices of the stock
@@ -1198,7 +1206,7 @@ Bosonic key distribution
 This script implements the bosonic quantum key distribution protocol to generate a secret key between Alice and Bob using qutip.
 
 Modules:
-    numpy: Provides support for large, multi-dimensional arrays and matrices, along with mathematical functions to operate on these arrays.
+    numpy: Provides support for large, multidimensional arrays and matrices, along with mathematical functions to operate on these arrays.
     qutip: Quantum Toolbox in Python. It is used for quantum mechanics and quantum computation.
     plotly.graph_objects: Provides classes for constructing graphics.
 
@@ -1310,7 +1318,7 @@ Bosonic cryptography
 This script visualizes the process of HSHH Cryptography using 3D vectors and quantum-inspired transformations.
 
 Modules:
-    numpy: Provides support for large, multi-dimensional arrays and matrices, along with mathematical functions to operate on these arrays.
+    numpy: Provides support for large, multidimensional arrays and matrices, along with mathematical functions to operate on these arrays.
     plotly.graph_objects: Provides classes for constructing graphics.
     qutip: Quantum Toolbox in Python. It is used for quantum mechanics and quantum computation.
 
@@ -1414,7 +1422,7 @@ Bosonic quantum machine learning
 This script creates a quantum circuit to perform matrix multiplication and compares the result with classical matrix multiplication.
 
 Modules:
-    numpy: Provides support for large, multi-dimensional arrays and matrices, along with mathematical functions to operate on these arrays.
+    numpy: Provides support for large, multidimensional arrays and matrices, along with mathematical functions to operate on these arrays.
     qiskit: A Python library for quantum computing.
     plotly.graph_objects: Provides classes for constructing graphics.
 

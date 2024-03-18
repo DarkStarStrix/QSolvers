@@ -1,4 +1,4 @@
-# Explaination of the bosonic solvers
+# Explanation of the bosonic solvers
 
 ## Introduction to the bosonic solvers
 
