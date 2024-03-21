@@ -11,6 +11,7 @@ class NonLinearSchrodingerSolver:
         self.time_array = time_array
         self.solution = None
 
+    @staticmethod
     def nonlinear_term(self, state, t, x, y):
         Naiver_Stokes = 1j * (sigmax () * state - state * sigmax ())
         u = np.sin (np.pi * x) * np.cos (np.pi * y)
