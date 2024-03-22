@@ -1,6 +1,5 @@
 import networkx as nx
-from qiskit import Aer, execute, QuantumCircuit, QuantumRegister, ClassicalRegister
-from qiskit.visualization import plot_histogram
+from qiskit import Aer, execute, QuantumCircuit
 from qiskit.aqua.algorithms import QAOA
 from qiskit.optimization.algorithms import MinimumEigenOptimizer
 from qiskit.optimization.applications.ising import tsp
@@ -15,9 +14,7 @@ class QAOASolver:
         self.beta = beta
 
     def qaoa_circuit(self):
-        q = QuantumRegister (self.G.number_of_nodes (), 'q')
-        c = ClassicalRegister (self.G.number_of_nodes (), 'c')
-        qc = QuantumCircuit (q, c)
+        qc = QuantumCircuit (self.G.number_of_nodes ())
         for i in range (self.G.number_of_nodes ()):
             qc.h (i)
             for j in range (i):
@@ -31,14 +28,12 @@ class QAOASolver:
 
     def run_qaoa(self):
         qc = self.qaoa_circuit ()
-        backend = Aer.get_backend ('qasm_simulator')
-        job = execute (qc, backend, shots=1000)
-        result = job.result ()
-        return result.get_counts (qc)
+        job = execute (qc, Aer.get_backend ('qasm_simulator'), shots=1000)
+        return job.result ().get_counts ()
 
     def solve(self):
         qp = tsp.get_operator (self.G)
-        qaoa = QAOA (optimizer=None, p=self.p, quantum_instance=Aer.get_backend ('qasm_simulator'))
+        qaoa = QAOA (p=self.p, quantum_instance=Aer.get_backend ('qasm_simulator'))
         meo = MinimumEigenOptimizer (qaoa)
         result = meo.solve (qp)
         return result, sample_most_likely (result.eigenstate)
@@ -55,7 +50,6 @@ def main():
 
     solver = QAOASolver (G, p=1, gamma=0.5, beta=0.5)
     counts = solver.run_qaoa ()
-    plot_histogram (counts)
     result, most_likely = solver.solve ()
     print (result)
     print (most_likely)

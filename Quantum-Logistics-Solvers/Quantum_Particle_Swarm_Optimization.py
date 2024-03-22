@@ -1,12 +1,10 @@
 from qiskit import QuantumCircuit, execute, Aer
-import numpy as np
 
 
 class QuantumParticle:
     def __init__(self, num_qubits):
-        self.num_qubits = num_qubits
-        self.circuit = QuantumCircuit (self.num_qubits)
-        self.circuit.h (range (self.num_qubits))
+        self.circuit = QuantumCircuit (num_qubits)
+        self.circuit.h (range (num_qubits))
         self.circuit.measure_all ()
 
     def run(self):

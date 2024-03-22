@@ -21,9 +21,5 @@ class QuantumAntColony:
 
 
 num_cities = 5
-distances = np.random.rand (num_cities, num_cities)
-np.fill_diagonal (distances, 0)
-distances = (distances + distances.T) / 2
-
 colony = QuantumAntColony (num_cities, num_cities)
 print (colony.run ())

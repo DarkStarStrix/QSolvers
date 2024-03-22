@@ -3,21 +3,16 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-from qiskit import QuantumRegister, ClassicalRegister, QuantumCircuit
-from qiskit.aqua.algorithms import QAOA
-from qiskit.aqua.components.optimizers import COBYLA
-from qiskit.aqua.translators.ising import tsp
-from qiskit.aqua import QuantumInstance
+from qiskit import QuantumCircuit, execute, Aer
 
 
 class QuantumTSP:
-    def __init__(self, cities, pop_size, generations, mutation_rate, elite_size, num_qubits):
+    def __init__(self, cities, pop_size, generations, mutation_rate, elite_size):
         self.cities = cities
         self.pop_size = pop_size
         self.generations = generations
         self.mutation_rate = mutation_rate
-        self.elite_size = int (elite_size)
-        self.num_qubits = num_qubits
+        self.elite_size = elite_size
         self.population = [np.random.permutation (len (cities)) for _ in range (pop_size)]
         self.fitness = []
         self.best_fitness = []
@@ -42,10 +37,7 @@ class QuantumTSP:
         return parents
 
     def crossover(self, parents):
-        children = []
-        for _ in range (len (parents)):
-            children.append (self.create_child (parents))
-        return children
+        return [self.create_child (parents) for _ in range (len (parents))]
 
     def create_child(self, parents):
         parent1, parent2 = np.random.choice (len (parents), 2, replace=False)
@@ -89,6 +81,6 @@ if __name__ == "__main__":
     cities = [(60, 200), (180, 200), (80, 180), (140, 180), (20, 160), (100, 160), (200, 160), (140, 140), (40, 120),
               (100, 120), (180, 100), (60, 80), (120, 80), (180, 60), (20, 40), (100, 40), (200, 40), (20, 20),
               (60, 20), (160, 20)]
-    tsp = QuantumTSP (cities, pop_size=100, generations=100, mutation_rate=0.01, elite_size=20, num_qubits=10)
+    tsp = QuantumTSP (cities, pop_size=100, generations=100, mutation_rate=0.01, elite_size=20)
     tsp.run ()
     tsp.plot ()

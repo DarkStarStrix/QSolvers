@@ -9,23 +9,18 @@ class BosonSampling:
     def __init__(self, n, m, U):
         self.n = n
         self.m = m
-        self.U = qt.tensor ([qt.Qobj (U) for _ in range (self.n)])
+        self.U = qt.tensor ([qt.Qobj (U) for _ in range (n)])
 
     def simulate(self):
         initial_state = qt.tensor ([qt.basis (self.m, 0) for _ in range (self.n)])
         final_state = self.U * initial_state
-        return abs (final_state.full ()) ** 2
+        return np.abs (final_state.full ()) ** 2
 
     def plot(self, prob):
         fig = go.Figure ()
         fig.add_trace (go.Bar (x=list (range (self.m)), y=prob [0]))
         fig.update_layout (title="Boson Sampling", xaxis_title="Output state", yaxis_title="Probability")
         fig.show ()
-
-    def simulate(self):
-        initial_state = qt.tensor ([qt.basis (self.m, 0) for _ in range (self.n)])
-        final_state = self.U * initial_state
-        return abs (final_state.full ()) ** 2
 
 
 if __name__ == "__main__":

@@ -1,24 +1,19 @@
 import networkx as nx
-from qiskit import QuantumCircuit
-from qiskit.aqua.algorithms import VQE, NumPyEigensolver
+from qiskit import QuantumCircuit, QuantumInstance
+from qiskit.aqua.algorithms import VQE, Grover
 from qiskit.aqua.components.optimizers import COBYLA
-from qiskit.aqua.operators import WeightedPauliOperator
 from qiskit.aqua.components.variational_forms import RY
-from qiskit.aqua import QuantumInstance
-from qiskit.visualization import plot_histogram
-from qiskit.aqua.algorithms import Grover
-from qiskit.aqua.components.oracles import LogicalExpressionOracle
 
 
 class GraphManager:
     def __init__(self, data):
-        self.data = data
-        self.graph = self.create_graph()
+        self.graph = self.create_graph(data)
 
-    def create_graph(self):
+    @staticmethod
+    def create_graph(data):
         graph = nx.Graph()
-        graph.add_nodes_from(self.data['nodes'])
-        graph.add_edges_from(self.data['edges'])
+        graph.add_nodes_from(data['nodes'])
+        graph.add_edges_from(data['edges'])
         return graph
 
 
@@ -51,7 +46,7 @@ class QGAF:
         self.quantum_searcher = QuantumSearcher(oracle)
 
     def execute(self):
-        graph = self.graph_manager.create_graph()
+        graph = self.graph_manager.graph
         ground_state = self.quantum_optimizer.find_ground_state()
         search_result = self.quantum_searcher.perform_grovers_search()
         return graph, ground_state, search_result
