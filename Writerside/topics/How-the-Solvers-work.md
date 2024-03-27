@@ -221,7 +221,6 @@ if __name__ == "__main__":
 
 In summary, this code is a complete implementation of Boson Sampling for a given number of photons and modes using the QuTiP library in Python. It creates a BosonSampling object, simulates the behavior of photons in a linear optical system, and visualizes the output state probabilities.
 
-## BosonSampling 2
 
 The first part of the code imports the necessary libraries and modules. The BosonSampling class is imported from the Quantum_Walk_Solvers library, numpy is imported for numerical computations, and matplotlib.pyplot is imported for data visualization.
 
@@ -583,3 +582,99 @@ print(simon.construct_circuit(measurement=True))
 ```
 
 In summary, this code is a complete implementation of Simon's algorithm using the Qiskit library. It creates a Simon algorithm instance, runs the algorithm on a backend, retrieves and prints the results, and visualizes the results as a histogram.
+
+## QBlueprintCircuit
+The `QBlueprintCircuit` class is a blueprint for creating custom quantum circuits in Qiskit. It provides methods for adding gates, barriers, measurements, and visualizing the circuit.
+
+The `CustomQuantumAlgorithm` class is initialized with a number of qubits. In the `__init__` method, it creates a list of `Qubit` and `Clbit` objects equal to the number of qubits specified. These are then added to the quantum circuit using the `add_register` method.
+
+```python
+def __init__(self, qubits):
+    super().__init__(name="Custom Quantum Algorithm")
+    self.qubits = [Qubit() for _ in range(qubits)]
+    self.clbits = [Clbit() for _ in range(qubits)]
+    self.add_register(*self.qubits)
+    self.add_register(*self.clbits)
+```
+
+The class also has `add_gate` method, which appends a specified gate to a specified qubit in the quantum circuit.
+
+```python
+def add_gate(self, gate, qubit):
+    self.append(gate, [self.qubits[qubit]])
+```
+
+The `run` method executes the quantum circuit on a simulator and returns the result. It uses the `execute` function from Qiskit to run the circuit on the 'qasm_simulator' backend. The result of the execution is then returned as a dictionary of counts.
+
+```python
+def run(self):
+    simulator = Aer.get_backend('qasm_simulator')
+    job = execute(self, simulator)
+    result = job.result()
+    return result.get_counts(self)
+```
+
+## Quantum energy solver
+The `QuantumSolver` class is a blueprint for solving quantum problems using the Variational Quantum Eigensolver (VQE) algorithm in Qiskit. It provides methods for creating a Hamiltonian, initializing the VQE algorithm, and computing the minimum eigenvalue. 
+this solver is meant to solve a quantum problem by finding the minimum energy configuration of a system.
+
+```python
+@qubits.setter
+def qubits(self, value):
+    self._qubits = value
+
+@clbits.setter
+def clbits(self, value):
+    self._clbits = value
+```
+
+In the main part of the script, an instance of `CustomQuantumAlgorithm` is created with 2 qubits. A Hadamard gate (`HGate`) is added to the first qubit, and then the quantum algorithm is run and the result is printed.
+
+```python
+custom_algo = CustomQuantumAlgorithm(2)
+custom_algo.add_gate(HGate(), 0)
+print(custom_algo.run())
+```
+
+This code provides a basic framework for creating and running custom quantum algorithms using Qiskit. It can be extended and modified to suit more complex use cases.
+
+The provided Python code uses the Qiskit library to solve a quantum problem. The main component of the code is the `QuantumSolver` class.
+
+The `QuantumSolver` class is initialized with several parameters, including `loss_coefficients`, `num_qubits`, `reps`, and `maxiter`. The `loss_coefficients` are used to create a Hamiltonian, which is a function that describes the total energy of the system. This is done in the `create_hamiltonian` method:
+
+```python
+@staticmethod
+def create_hamiltonian(loss_coefficients):
+    return sum (coeff * (I ^ I ^ (Z - I)) for coeff in loss_coefficients)
+```
+
+The `num_qubits` parameter specifies the number of qubits to be used in the quantum circuit. The `reps` parameter specifies the number of repetitions of the circuit to be performed. The `maxiter` parameter specifies the maximum number of iterations for the optimizer.
+
+The `__init__` method of the `QuantumSolver` class initializes several important components of the quantum algorithm. It creates a quantum instance using the Aer simulator, an ansatz (a guess for the quantum state that minimizes the energy), an optimizer, and a Variational Quantum Eigensolver (VQE) instance:
+
+```python
+def __init__(self, loss_coefficients, num_qubits=3, reps=1, maxiter=100):
+    self.loss_coefficients = loss_coefficients
+    self.H_loss = self.create_hamiltonian (self.loss_coefficients)
+    self.quantum_instance = QuantumInstance (Aer.get_backend ('aer_simulator_statevector'))
+    self.ansatz = EfficientSU2 (num_qubits=num_qubits, reps=reps)
+    self.optimizer = SPSA (maxiter=maxiter)
+    self.vqe = VQE (self.ansatz, self.optimizer, quantum_instance=self.quantum_instance)
+```
+
+The `compute_minimum_eigenvalue` method runs the VQE algorithm on the Hamiltonian and returns the real part of the minimum eigenvalue, which corresponds to the minimum energy of the system:
+
+```python
+def compute_minimum_eigenvalue(self):
+    result = self.vqe.compute_minimum_eigenvalue (operator=self.H_loss)
+    return result.eigenvalue.real
+```
+
+In the main part of the script, an instance of `QuantumSolver` is created with specific loss coefficients. The minimum eigenvalue (energy) is then computed and printed:
+
+```python
+solver = QuantumSolver ([1.2, 0.9, 1.5])
+print (f"Minimum Loss Configuration Energy: {solver.compute_minimum_eigenvalue ()}")
+```
+
+This code provides a basic framework for solving quantum problems using the VQE algorithm in Qiskit. It can be extended and modified to suit more complex use cases.
