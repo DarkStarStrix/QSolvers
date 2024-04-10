@@ -81,7 +81,6 @@ wrapt==1.16.0
 yfinance~=0.2.28
 zipp==3.17.0
 zope.interface==6.2
-
 networkx~=2.8.8
 wtforms~=3.1.2
 dimod~=0.10.17
