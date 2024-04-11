@@ -1,6 +1,6 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from qiskit import QuantumCircuit, execute, Aer
+from qiskit import QuantumCircuit
+from qiskit_aer import Aer
+from qiskit.visualization import plot_histogram
 
 
 class TSP:
@@ -22,7 +22,7 @@ class QuantumAStar:
 
     def run_qc(self):
         backend = Aer.get_backend ('qasm_simulator')
-        job = execute (self.qc, backend, shots=1000)
+        job = backend.run (self.qc, shots=1024)
         result = job.result ()
         counts = result.get_counts ()
         return counts
@@ -38,6 +38,8 @@ def main():
     quantum_a_star = QuantumAStar (tsp)
     counts = quantum_a_star.run_qc ()
     print (counts)
+
+    plot_histogram (counts)
 
 
 if __name__ == '__main__':
