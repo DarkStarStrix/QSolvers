@@ -71,8 +71,7 @@ class QuantumTSP:
     mutation_rate : float
         the mutation rate
     elite_size : int
-        the size of the elite population
-    population : list
+        the size of the elite population     : list
         a list of permutations representing the population
     fitness : list
         a list of fitness values for the population
@@ -348,8 +347,7 @@ class Graph:
     Attributes
     ----------
     num_nodes : int
-        the number of nodes in the graph
-    graph : dict
+        the number of nodes in the graph     : dict
         a dictionary representing the graph where each key is a node and its corresponding value is a dictionary of connected nodes with their weights
 
     Methods
