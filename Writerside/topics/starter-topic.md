@@ -53,596 +53,764 @@ Each algorithm is implemented in Python using the Qiskit library for quantum com
 
 The project is structured as follows:
 Quantum_Genetic_Algorithm.py: This file contains the implementation of the Quantum Genetic Algorithm for the TSP.
-
 ```python
-class QuantumGeneticAlgorithm:
+class QuantumTSP:
     """
-    This class implements a Quantum Genetic Algorithm for the Traveling Salesman Problem (TSP).
+    A class used to represent the Traveling Salesman Problem (TSP) using a quantum genetic algorithm.
+
+    ...
+
+    Attributes
+    ----------
+    cities : list
+        a list of city coordinates
+    pop_size : int
+        the size of the population
+    generations : int
+        the number of generations
+    mutation_rate : float
+        the mutation rate
+    elite_size : int
+        the size of the elite population
+    population : list
+        a list of permutations representing the population
+    fitness : list
+        a list of fitness values for the population
+    best_individual : list
+        the best individual in the population
+    best_fitness : float
+        the best fitness value in the population
+
+    Methods
+    -------
+    calculate_fitness():
+        Calculates the fitness for each individual in the population.
+    select_parents():
+        Selects the parents for the next generation.
+    crossover(parents):
+        Performs crossover on the parents to generate children.
+    mutate(children):
+        Performs mutation on the children.
+    create_circuit():
+        Creates a quantum circuit for the TSP.
     """
 
-    def initialize_population(self):
+    def __init__(self, cities, pop_size, generations, mutation_rate, elite_size):
         """
-        This method initializes the population of routes. Each route is a permutation of the cities.
+        Constructs all the necessary attributes for the QuantumTSP object.
+
+        Parameters
+        ----------
+            cities : list
+                a list of city coordinates
+            pop_size : int
+                the size of the population
+            generations : int
+                the number of generations
+            mutation_rate : float
+                the mutation rate
+            elite_size : int
+                the size of the elite population
         """
-        self.population = [np.random.permutation(len(self.cities)) for _ in range(self.pop_size)]
+        self.cities = cities
+        self.pop_size = pop_size
+        self.generations = generations
+        self.mutation_rate = mutation_rate
+        self.elite_size = elite_size
+        self.population = [np.random.permutation (len (cities)) for _ in range (pop_size)]
+        self.fitness = self.calculate_fitness ()
+        self.best_individual = self.population [np.argmin (self.fitness)]
+        self.best_fitness = np.min (self.fitness)
 
     def calculate_fitness(self):
         """
-        This method calculates the fitness of each individual in the population. 
-        The fitness of an individual is the total distance of the route.
-        """
-        self.fitness = [self.calculate_route_length(individual) for individual in self.population]
+        Calculates the fitness for each individual in the population.
 
-    def calculate_route_length(self, route):
+        Returns
+        -------
+        list
+            a list of fitness values for the population
         """
-        This method calculates the total distance of a route.
-
-        Parameters:
-        route (list): The route to calculate the distance for.
-
-        Returns:
-        float: The total distance of the route.
-        """
-        return sum(
-            np.linalg.norm(np.array(self.cities[route[i]]) - np.array(self.cities[route[i + 1]])) for i in
-            range(len(self.cities) - 1)) + np.linalg.norm(
-            np.array(self.cities[route[-1]]) - np.array(self.cities[route[0]]))
+        fitness = []
+        for individual in self.population:
+            distance = 0
+            for i in range (len (individual) - 1):
+                distance += np.linalg.norm (self.cities [individual [i]] - self.cities [individual [i + 1]])
+            distance += np.linalg.norm (self.cities [individual [-1]] - self.cities [individual [0]])
+            fitness.append (distance)
+        return fitness
 
     def select_parents(self):
         """
-        This method selects the parents for the next generation. 
-        The parents are the individuals with the shortest routes.
+        Selects the parents for the next generation.
+
+        Returns
+        -------
+        list
+            a list of parents
         """
-        parents = []
-        for _ in range(self.elite_size):
-            index = np.argmin(self.fitness)
-            parents.append(self.population.pop(index))
-            self.fitness.pop(index)
+        fitness = 1 / np.array (self.fitness)
+        fitness /= np.sum (fitness)
+        parents = [self.population [i] for i in
+                   np.random.choice (len (self.population), self.elite_size, p=fitness, replace=False)]
         return parents
 
     def crossover(self, parents):
         """
-        This method generates the children for the next generation by performing crossover on the parents.
+        Performs crossover on the parents to generate children.
+
+        Parameters
+        ----------
+        parents : list
+            a list of parents
+
+        Returns
+        -------
+        list
+            a list of children
         """
         children = []
-        for _ in range(len(parents)):
-            children.append(self.create_child(parents))
+        for i in range (self.pop_size - self.elite_size):
+            parent1 = parents [np.random.randint (len (parents))]
+            parent2 = parents [np.random.randint (len (parents))]
+            child = np.copy (parent1)
+            for j in range (len (child)):
+                if np.random.rand () < 0.5:
+                    child [j] = parent2 [j]
+            children.append (child)
         return children
-
-    def create_child(self, parents):
-        """
-        This method creates a child by selecting a subset of the route from one parent 
-        and filling in the remaining cities from the other parent.
-
-        Parameters:
-        parents (list): The parents to create the child from.
-
-        Returns:
-        list: The child created from the parents.
-        """
-        parent1, parent2 = np.random.choice(len(parents), 2, replace=False)
-        parent1, parent2 = parents[parent1], parents[parent2]
-        start, end = sorted(np.random.choice(len(self.cities), 2, replace=False))
-        child = [-1] * len(self.cities)
-        child[start:end] = parent1[start:end]
-        remaining_cities = [city for city in parent2 if city not in child]
-        child = [remaining_cities.pop(0) if city == -1 else city for city in child]
-        return child
 
     def mutate(self, children):
         """
-        This method introduces variation in the population by swapping two cities in the route of a child 
-        with a certain probability.
+        Performs mutation on the children.
+
+        Parameters
+        ----------
+        children : list
+            a list of children
+
+        Returns
+        -------
+        list
+            a list of mutated children
         """
-        for child in children:
-            if np.random.rand() < self.mutation_rate:
-                index1, index2 = np.random.choice(len(self.cities), 2, replace=False)
-                child[index1], child[index2] = child[index2], child[index1]
+        for i in range (len (children)):
+            if np.random.rand () < self.mutation_rate:
+                index1, index2 = np.random.choice (len (children [i]), 2, replace=False)
+                children [i] [index1], children [i] [index2] = children [i] [index2], children [i] [index1]
         return children
 
-    def variable_neighborhood_search(self, children):
+    def create_circuit(self):
         """
-        This method performs a local search on the children to try to improve their fitness.
+        Creates a quantum circuit for the TSP.
+
+        Returns
+        -------
+        QuantumCircuit
+            a quantum circuit for the TSP
         """
-        for child in children:
-            if np.random.rand() < self.mutation_rate:
-                self.local_search(child)
-        return children
+        n = len (self.cities)
+        qc = QuantumCircuit (n, n)
+        qc.h (range (n))
+        qc.barrier ()
+        for i in range (n):
+            for j in range (n):
+                if i != j:
+                    qc.cp (np.linalg.norm (self.cities [i] - self.cities [j]), i, j)
+        qc.barrier ()
+        qc.h (range (n))
+        qc.barrier ()
+        qc.measure (range (n), range (n))
+        return qc
 
-    def local_search(self, child):
+    def __str__(self):
         """
-        This method uses the Quantum Approximate Optimization Algorithm (QAOA) to find a better route.
+        Returns the best individual and its fitness value as a string.
 
-        Parameters:
-        child (list): The child to perform the local search on.
+        Returns
+        -------
+        str
+            a string representation of the best individual and its fitness value
         """
-        # Create a QAOA circuit
-        qaoa = QAOA(optimizer=COBYLA(), p=1, quantum_instance=QuantumInstance(qk.Aer.get_backend('qasm_simulator')))
+        return f'{self.best_individual} {self.best_fitness}'
 
-        # Define the TSP problem for QAOA
-        tsp_qaoa = tsp.TspData('tsp', len(self.cities), np.array(self.cities),
-                               self.calculate_distance_matrix(child))
 
-        # Convert the TSP problem to an Ising problem
-        ising_qaoa = tsp.get_operator(tsp_qaoa)
-
-        # Run QAOA on the Ising problem
-        result_qaoa = qaoa.compute_minimum_eigenvalue(ising_qaoa[0])
-
-        # Get the optimal route from the QAOA result
-        optimal_route_qaoa = tsp.get_tsp_solution(result_qaoa)
-
-        # Replace the child with the optimal route
-        child[:] = optimal_route_qaoa   
- ```
-
+if __name__ == "__main__":
+    cities = np.random.rand (10, 2)
+    tsp = QuantumTSP (cities, 100, 100, 0.01, 10)
+    for _ in range (tsp.generations):
+        parents = tsp.select_parents ()
+        children = tsp.crossover (parents)
+        children = tsp.mutate (children)
+        tsp.population = parents + children
+        tsp.fitness = tsp.calculate_fitness ()
+        best_index = np.argmin (tsp.fitness)
+        if tsp.fitness [best_index] < np.min (tsp.best_fitness):
+            tsp.best_individual = tsp.population [best_index]
+            tsp.best_fitness = tsp.fitness [best_index]
+    print (tsp.best_individual, tsp.best_fitness)
+```
 Quantum_Convex.py: This file contains the implementation of the Quantum Convex Hull Algorithm for the TSP.
 ```python
-def create_circuit(distances):
+# Import necessary libraries
+import numpy as np
+from qiskit import QuantumCircuit
+
+class TSP:
     """
-    This function creates a quantum circuit for the given distances.
+    A class used to represent the Traveling Salesman Problem (TSP) using a quantum approach.
 
-    Parameters:
-    distances (list): A list of distances between the cities.
+    ...
 
-    Returns:
-    QuantumCircuit: A quantum circuit for the given distances.
+    Attributes
+    ----------
+    cities : dict
+        a dictionary where each key is a city name and its corresponding value is an index
+    distances : list
+        a 2D list representing the distances between the cities
+    qc : QuantumCircuit
+        a quantum circuit representing the TSP
+
+    Methods
+    -------
+    create_circuit():
+        Creates a quantum circuit for the TSP.
     """
-    # Create a Quantum Register with n qubits.
-    n = len(distances)
-    q = QuantumRegister(n, 'q')
 
-    # Create a Classical Register with n bits.
-    c = ClassicalRegister(n, 'c')
+    def __init__(self, cities, distances):
+        """
+        Constructs all the necessary attributes for the TSP object.
 
-    # Create a Quantum Circuit acting on the q register
-    qc = QuantumCircuit(q, c)
+        Parameters
+        ----------
+            cities : dict
+                a dictionary where each key is a city name and its corresponding value is an index
+            distances : list
+                a 2D list representing the distances between the cities
+        """
+        self.cities = cities
+        self.distances = distances
+        self.qc = self.create_circuit ()
 
-    # Apply Hadamard gate to all qubits
-    qc.h(q)
-    qc.barrier()
+    def create_circuit(self):
+        """
+        Creates a quantum circuit for the TSP.
 
-    # Apply controlled phase rotation gate between each pair of qubits
-    for i in range(n):
-        for j in range(n):
-            if i != j:
-                qc.cp(distances[i][j], q[i], q[j])
-    qc.barrier()
-
-    # Apply Hadamard gate to all qubits again
-    qc.h(q)
-    qc.barrier()
-
-    # Measure all qubits
-    qc.measure(q, c)
-
-    # Return the circuit
-    return qc
-
-
-# Define an optimizer for the quantum algorithm (e.g., COBYLA or ADAM)
-optimizer = COBYLA(maxiter=1000)
-
-# Define a quantum instance for execution (e.g., AerSimulator or real quantum device)
-backend = Aer.get_backend('qasm_simulator')
-quantum_instance = QuantumInstance(backend, shots=1000)
-
-# Define a QuadraticProgram representing the TSP problem
-quadratic_program = QuadraticProgram()
+        Returns
+        -------
+        QuantumCircuit
+            a quantum circuit for the TSP
+        """
+        n = len (self.distances)
+        qc = QuantumCircuit (n, n)
+        qc.h (range (n))
+        qc.barrier ()
+        for i in range (n):
+            for j in range (n):
+                if i != j:
+                    qc.cp (self.distances [i] [j], i, j)
+        qc.barrier ()
+        qc.h (range (n))
+        qc.barrier ()
+        qc.measure (range (n), range (n))
+        return qc
 
 
-def create_hamiltonian(quadratic_program):
+def main():
     """
-    This function creates an Ising Hamiltonian for the given QuadraticProgram.
-
-    Parameters:
-    quadratic_program (QuadraticProgram): A QuadraticProgram representing the TSP problem.
-
-    Returns:
-    dict: A dictionary representing the coefficients of the Ising Hamiltonian.
+    The main function that creates a TSP object and prints the quantum circuit.
     """
-    # Create a dictionary of the coefficients of the Ising Hamiltonian
-    coefficients = {}
-
-    # Build the dictionary here
-    distances = quadratic_program.objective.linear.to_dict()
-    for i in range(len(distances)):
-        for j in range(len(distances)):
-            if i != j:
-                coefficients[(i, j)] = distances[i][j]
-                return coefficients
-
-    # Return the dictionary
-    return coefficients
+    cities = {'A': 0, 'B': 1, 'C': 2, 'D': 3}
+    distances = [[0, 1, 2, 3],
+                 [1, 0, 1, 2],
+                 [2, 1, 0, 1],
+                 [3, 2, 1, 0]]
+    tsp = TSP (cities, distances)
+    x = tsp.qc.draw ()
+    print (x)
 
 
-# Create a VQE algorithm to solve the convex hull problem
-vqe = VQE(quantum_instance=quantum_instance)
-
-# Create a MinimumEigenOptimizer to wrap the VQE algorithm
-minimum_eigen_optimizer = MinimumEigenOptimizer(vqe)
-
-# Create a LinearEqualityToPenalty converter to convert the equality constraints to inequality constraints
-linear_equality_to_penalty = LinearEqualityToPenalty()
-
-# Solve the TSP using the MinimumEigenOptimizer
-result = minimum_eigen_optimizer.solve(quadratic_program)
-
-# Extract the optimized TSP solution from the result
-x = result.x
-
-
-def refine_solution(x):
-    """
-    This function refines the solution if necessary (e.g., using variable neighborhood search).
-
-    Parameters:
-    x (list): The solution to be refined.
-
-    Returns:
-    list: The refined solution.
-    """
-    return x
+if __name__ == '__main__':
+    main ()
 ```
 
 Quantum_Annealing.py: This file contains the implementation of Quantum Annealing for the TSP.
 ```python
-def _create_qubo(self):
-    """
-    This method creates a Quadratic Unconstrained Binary Optimization (QUBO) problem for the TSP.
-    The QUBO problem is represented as a dictionary where the keys are tuples representing the nodes `(i, j)`,
-    and the values are the weights of the edges between these nodes.
+# Import necessary library
+import dimod
 
-    Returns:
-    dict: The QUBO problem represented as a dictionary.
+class Graph:
     """
-    QUBO = {}
-    for i in range(self.num_nodes):
-        for j in range(i + 1, self.num_nodes):
-            for k in range(self.num_nodes):
-                for l in range(self.num_nodes):
-                    if i != j and i != k and i != l and j != k and j != l and k != l:
-                        QUBO[(i, j)] = self.graph[i][j]['weight']
-                        QUBO[(j, k)] = self.graph[j][k]['weight']
-                        QUBO[(k, l)] = self.graph[k][l]['weight']
-    return QUBO
+    A class used to represent a graph.
 
-def solve(self):
-    """
-    This method solves the TSP using the D-Wave quantum annealer.
-    It uses the `sample_qubo` method to find the solution, which is a dictionary where the keys are the nodes
-    and the values are either 0 or 1, indicating whether the node is included in the solution or not.
-    The method then extracts the nodes that are included in the solution and returns them as the route.
+    ...
 
-    Returns:
-    list: The optimal route for the TSP.
-    """
-    EmbeddingComposite(DWaveSampler())
-    response = dimod.ExactSolver().sample_qubo(self.qubo)
-    solution = response.first.sample
-    route = [node for node, bit in solution.items() if bit == 1]
-    return route
+    Attributes
+    ----------
+    num_nodes : int
+        the number of nodes in the graph
+    graph : dict
+        a dictionary representing the graph where each key is a node and its corresponding value is a dictionary of connected nodes with their weights
 
-def plot_route(self, route):
+    Methods
+    -------
     """
-    This method visualizes the solution to the TSP.
-    It uses the NetworkX and Matplotlib libraries to draw the graph and highlight the nodes that are included in the solution.
-    The `nx.draw` function is used to draw the graph, and the `nx.draw_networkx_nodes` function is used to highlight the nodes in the solution.
 
-    Parameters:
-    route (list): The optimal route for the TSP.
+    def __init__(self, num_nodes):
+        """
+        Constructs all the necessary attributes for the Graph object.
+
+        Parameters
+        ----------
+            num_nodes : int
+                the number of nodes in the graph
+        """
+        self.num_nodes = num_nodes
+        self.graph = {i: {j: 1 for j in range (num_nodes) if i != j} for i in range (num_nodes)}
+
+
+class TSPSolver:
     """
-    pos = nx.spring_layout(self.graph)
-    nx.draw(self.graph, pos, with_labels=True, node_size=500)
-    nx.draw_networkx_nodes(self.graph, pos, nodelist=route, node_color='r')
-    labels = {i: i for i in route}
-    nx.draw_networkx_labels(self.graph, pos, labels=labels)
-    plt.title("TSP Route")
-    plt.show()
+    A class used to solve the Traveling Salesman Problem (TSP) using a quantum approach.
+
+    ...
+
+    Attributes
+    ----------
+    graph : dict
+        a dictionary representing the graph where each key is a node and its corresponding value is a dictionary of connected nodes with their weights
+    qubo : dict
+        a dictionary representing the Quadratic Unconstrained Binary Optimization (QUBO) problem
+
+    Methods
+    -------
+    _create_qubo():
+        Creates the QUBO problem.
+    solve():
+        Solves the QUBO problem and returns the optimal route.
+    plot_route(route):
+        Prints the optimal route.
+    """
+
+    def __init__(self, graph):
+        """
+        Constructs all the necessary attributes for the TSPSolver object.
+
+        Parameters
+        ----------
+            graph : Graph
+                a Graph object
+        """
+        self.graph = graph.graph
+        self.qubo = self._create_qubo ()
+
+    def _create_qubo(self):
+        """
+        Creates the QUBO problem.
+
+        Returns
+        -------
+        dict
+            a dictionary representing the QUBO problem
+        """
+        return {(i, j): self.graph [i] [j] for i in range (len (self.graph)) for j in range (i + 1, len (self.graph))}
+
+    def solve(self):
+        """
+        Solves the QUBO problem and returns the optimal route.
+
+        Returns
+        -------
+        list
+            a list representing the optimal route
+        """
+        response = dimod.ExactSolver ().sample_qubo (self.qubo)
+        return [node for node, bit in response.first.sample.items () if bit == 1]
+
+    @staticmethod
+    def plot_route(route):
+        """
+        Prints the optimal route.
+
+        Parameters
+        ----------
+            route : list
+                a list representing the optimal route
+        """
+        print ("TSP Route:", route)
+
+
+# Create a Graph object
+G = Graph (4)
+# Create a TSPSolver object
+tsp_solver = TSPSolver (G)
+# Solve the TSP
+optimal_route = tsp_solver.solve ()
+# Print the optimal route
+tsp_solver.plot_route (optimal_route)
 ```
 
 Quantum_A.py: This file contains the implementation of the Quantum A* Algorithm for the TSP.
 ```python
-# Create a QuantumCircuit for the TSP problem
+# Import necessary libraries
+from qiskit import QuantumCircuit
+from qiskit_aer import Aer
+from qiskit.visualization import plot_histogram
+
+class TSP:
+    """
+    A class used to represent the Traveling Salesman Problem (TSP).
+
+    ...
+
+    Attributes
+    ----------
+    cities : dict
+        a dictionary where each key is a city name and its corresponding value is an index
+    distances : list
+        a 2D list representing the distances between the cities
+    """
+
+    def __init__(self, cities, distances):
+        """
+        Constructs all the necessary attributes for the TSP object.
+
+        Parameters
+        ----------
+            cities : dict
+                a dictionary where each key is a city name and its corresponding value is an index
+            distances : list
+                a 2D list representing the distances between the cities
+        """
+        self.cities = cities
+        self.distances = distances
+
+
 class QuantumAStar:
     """
-    This class implements the Quantum A* Algorithm for the Traveling Salesman Problem (TSP).
+    A class used to solve the Traveling Salesman Problem (TSP) using a quantum approach.
+
+    ...
+
+    Attributes
+    ----------
+    tsp : TSP
+        a TSP object
+    qc : QuantumCircuit
+        a quantum circuit representing the TSP
+
+    Methods
+    -------
+    make_qc():
+        Creates a quantum circuit for the TSP.
+    run_qc():
+        Runs the quantum circuit and returns the counts of the measurement results.
     """
 
     def __init__(self, tsp):
         """
-        This method initializes the QuantumAStar object.
+        Constructs all the necessary attributes for the QuantumAStar object.
 
-        Parameters:
-        tsp (TSP): The TSP problem to solve.
+        Parameters
+        ----------
+            tsp : TSP
+                a TSP object
         """
-        self.qc = None
         self.tsp = tsp
-        self.start_city = tsp.get_start_city ()
-        self.cities_list = tsp.get_cities_list ()
-        self.cities_list_without_start = tsp.get_cities_list_without_start ()
-        self.number_of_cities = tsp.get_number_of_cities ()
-        self.distance_matrix = tsp.get_distance_matrix ()
-        self.distance_matrix_without_start = [row [1:] for row in self.distance_matrix [1:]]
-        self.make_qc ()
-        self.qc.draw (output='mpl')
-        plt.show ()
+        self.qc = self.make_qc ()
 
     def make_qc(self):
         """
-        This method creates a quantum circuit for the given TSP problem.
-        """
-        self.qc = QuantumCircuit (self.number_of_cities, self.number_of_cities)
-        self.qc.h (range (self.number_of_cities))
-        self.qc.barrier ()
-        for i in range (self.number_of_cities):
-            for j in range (self.number_of_cities):
-                if i != j:
-                    self.qc.cp (2 * np.arcsin (np.sqrt (self.distance_matrix_without_start [i] [j] / 10)), i, j)
+        Creates a quantum circuit for the TSP.
 
-        self.qc.barrier ()
-        self.qc.h (range (self.number_of_cities))
-        self.qc.barrier ()
-        self.qc.measure (range (self.number_of_cities), range (self.number_of_cities))
+        Returns
+        -------
+        QuantumCircuit
+            a quantum circuit for the TSP
+        """
+        qc = QuantumCircuit (len (self.tsp.cities), len (self.tsp.cities))
+        qc.h (range (len (self.tsp.cities)))
+        qc.measure (range (len (self.tsp.cities)), range (len (self.tsp.cities)))
+        return qc
 
     def run_qc(self):
         """
-        This method runs the quantum circuit on a quantum simulator.
+        Runs the quantum circuit and returns the counts of the measurement results.
 
-        Returns:
-        dict: The counts of the quantum circuit.
+        Returns
+        -------
+        dict
+            a dictionary representing the counts of the measurement results
         """
         backend = Aer.get_backend ('qasm_simulator')
-        job = execute (self.qc, backend, shots=1000)
+        job = backend.run (self.qc, shots=1024)
         result = job.result ()
         counts = result.get_counts ()
         return counts
 
-    def get_best_path(self, counts):
-        """
-        This method gets the best path from the counts.
 
-        Parameters:
-        counts (dict): The counts of the quantum circuit.
+def main():
+    """
+    The main function that creates a TSP object, a QuantumAStar object, runs the quantum circuit, and prints the counts of the measurement results.
+    """
+    cities = {'A': 0, 'B': 1, 'C': 2, 'D': 3}
+    distances = [[0, 1, 2, 3],
+                 [1, 0, 1, 2],
+                 [2, 1, 0, 1],
+                 [3, 2, 1, 0]]
+    tsp = TSP (cities, distances)
+    quantum_a_star = QuantumAStar (tsp)
+    counts = quantum_a_star.run_qc ()
+    print (counts)
 
-        Returns:
-        tuple: The best path and its cost.
-        """
-        best_path = None
-        best_path_cost = None
-        for path in counts:
-            cost = self.get_cost (path)
-            if best_path_cost is None or cost < best_path_cost:
-                best_path = path
-                best_path_cost = cost
-        return best_path, best_path_cost
+    plot_histogram (counts)
 
-    def get_cost(self, path):
-        """
-        This method gets the cost of a path.
 
-        Parameters:
-        path (str): The path to get the cost for.
-
-        Returns:
-        int: The cost of the path.
-        """
-        cost = 0
-        for i in range (self.number_of_cities):
-            if path [i] == '1':
-                cost += self.distance_matrix [self.start_city] [i]
-        return cost
-
-    def get_path(self, path):
-        """
-        This method gets the path from the counts.
-
-        Parameters:
-        path (str): The path to get from the counts.
-
-        Returns:
-        list: The path.
-        """
-        path_list = []
-        for i in range (self.number_of_cities):
-            if path [i] == '1':
-                path_list.append (self.cities_list [i])
-        return path_list
+if __name__ == '__main__':
+    main ()
 ```
 
 Quantum_Particle_Swarm_Optimization.py: This file contains the implementation of the Quantum Particle Swarm Optimization for the TSP.
 ```python
-# Create a QuantumCircuit for the TSP problem
+from qiskit import QuantumCircuit
+
 class QuantumParticle:
     """
-    This class represents a quantum particle in the Quantum Particle Swarm Optimization algorithm.
+    A class used to represent a quantum particle.
 
-    Attributes:
-    num_qubits (int): The number of qubits in the quantum circuit.
-    circuit (QuantumCircuit): The quantum circuit representing the quantum particle.
+    ...
+
+    Attributes
+    ----------
+    circuit : QuantumCircuit
+        a quantum circuit representing the quantum particle
+
+    Methods
+    -------
     """
 
     def __init__(self, num_qubits):
         """
-        The constructor for the QuantumParticle class.
+        Constructs all the necessary attributes for the QuantumParticle object.
 
-        Parameters:
-        num_qubits (int): The number of qubits in the quantum circuit.
+        Parameters
+        ----------
+            num_qubits : int
+                the number of qubits in the quantum circuit
         """
-        self.num_qubits = num_qubits
-        self.circuit = QuantumCircuit(self.num_qubits)
-        self.circuit.h(range(self.num_qubits))
-        self.circuit.measure_all()
-
-    def run(self):
-        """
-        This method runs the quantum circuit on a quantum simulator.
-
-        Returns:
-        dict: The counts of the quantum circuit.
-        """
-        return execute(self.circuit, Aer.get_backend('qasm_simulator'), shots=1).result().get_counts()
+        self.circuit = QuantumCircuit (num_qubits)
+        self.circuit.h (range (num_qubits))
+        self.circuit.measure_all ()
 
 
 class QuantumSwarm:
     """
-    This class represents a swarm of quantum particles in the Quantum Particle Swarm Optimization algorithm.
+    A class used to represent a quantum swarm.
 
-    Attributes:
-    particles (list): The list of quantum particles in the swarm.
+    ...
+
+    Attributes
+    ----------
+    particles : list
+        a list of QuantumParticle objects representing the quantum swarm
+
+    Methods
+    -------
     """
 
     def __init__(self, num_particles, num_qubits):
         """
-        The constructor for the QuantumSwarm class.
+        Constructs all the necessary attributes for the QuantumSwarm object.
 
-        Parameters:
-        num_particles (int): The number of particles in the swarm.
-        num_qubits (int): The number of qubits in the quantum circuit of each particle.
+        Parameters
+        ----------
+            num_particles : int
+                the number of particles in the quantum swarm
+            num_qubits : int
+                the number of qubits in each quantum particle
         """
-        self.particles = [QuantumParticle(num_qubits) for _ in range(num_particles)]
+        self.particles = [QuantumParticle (num_qubits) for _ in range (num_particles)]
 
-    def run(self):
-        """
-        This method runs the quantum circuit of each particle in the swarm on a quantum simulator.
-        """
-        for particle in self.particles:
-            print(particle.run())
+
+if __name__ == '__main__':
+    # Create a QuantumSwarm object with 10 particles, each with 5 qubits
+    swarm = QuantumSwarm (10, 5)
+    # Print each QuantumParticle object in the QuantumSwarm
+    for particle in swarm.particles:
+        print (particle)
 ```
 
 Quantum_Ant_Colony_Optimization.py: This file contains the implementation of the Quantum Ant Colony Optimization for the TSP.
 ```python
-# Create a QuantumCircuit for the TSP problem
+import numpy as np
+from qiskit import QuantumCircuit, transpile, assemble
+
 class QuantumAnt:
     """
-    This class represents a quantum ant in the Quantum Ant Colony Optimization algorithm.
+    A class used to represent a quantum ant.
 
-    Attributes:
-    circuit (QuantumCircuit): The quantum circuit representing the quantum ant.
+    ...
+
+    Attributes
+    ----------
+    circuit : QuantumCircuit
+        a quantum circuit representing the quantum ant
+
+    Methods
+    -------
     """
 
     def __init__(self, num_qubits):
         """
-        The constructor for the QuantumAnt class.
+        Constructs all the necessary attributes for the QuantumAnt object.
 
-        Parameters:
-        num_qubits (int): The number of qubits in the quantum circuit.
+        Parameters
+        ----------
+            num_qubits : int
+                the number of qubits in the quantum circuit
         """
-        self.circuit = QuantumCircuit(num_qubits)
-        self.circuit.h(range(num_qubits))
-        self.circuit.measure_all()
-
-    def run(self):
-        """
-        This method runs the quantum circuit on a quantum simulator.
-
-        Returns:
-        dict: The counts of the quantum circuit.
-        """
-        return execute(self.circuit, Aer.get_backend('qasm_simulator'), shots=1).result().get_counts()
+        self.circuit = QuantumCircuit (num_qubits)
+        self.circuit.h (range (num_qubits))
+        self.circuit.measure_all ()
 
 
 class QuantumAntColony:
     """
-    This class represents a colony of quantum ants in the Quantum Ant Colony Optimization algorithm.
+    A class used to represent a quantum ant colony.
 
-    Attributes:
-    ants (list): The list of quantum ants in the colony.
+    ...
+
+    Attributes
+    ----------
+    ants : list
+        a list of QuantumAnt objects representing the quantum ant colony
+
+    Methods
+    -------
     """
 
     def __init__(self, num_ants, num_qubits):
         """
-        The constructor for the QuantumAntColony class.
+        Constructs all the necessary attributes for the QuantumAntColony object.
 
-        Parameters:
-        num_ants (int): The number of ants in the colony.
-        num_qubits (int): The number of qubits in the quantum circuit of each ant.
+        Parameters
+        ----------
+            num_ants : int
+                the number of ants in the quantum ant colony
+            num_qubits : int
+                the number of qubits in each quantum ant
         """
-        self.ants = [QuantumAnt(num_qubits) for _ in range(num_ants)]
+        self.ants = [QuantumAnt (num_qubits) for _ in range (num_ants)]
 
-    def run(self):
-        """
-        This method runs the quantum circuit of each ant in the colony on a quantum simulator.
-        """
-        for ant in self.ants:
-            print(ant.run())
+
+# Example usage
+num_cities = 5
+# Create a QuantumAntColony object with num_cities ants, each with num_cities qubits
+colony = QuantumAntColony (num_cities, num_cities)
+# Print the QuantumAntColony object
+print (colony)
 ```
 
 Quantum_Approximate_Optimization_Algorithm.py: This file contains the implementation of the Quantum Approximate Optimization Algorithm for the TSP.
 ```python
-# Create a QuantumCircuit for the TSP problem
-class QAOASolver:
+import numpy as np
+from qiskit import QuantumCircuit
+
+class GHZCircuit:
     """
-    This class implements the Quantum Approximate Optimization Algorithm (QAOA) for solving the Traveling Salesman Problem (TSP).
+    A class used to represent a GHZ (Greenberger–Horne–Zeilinger) state circuit.
 
-    Attributes:
-    G (Graph): The graph representing the TSP.
-    p (int): The number of QAOA steps.
-    gamma (float): The angle for the Ising interactions in the QAOA circuit.
-    beta (float): The angle for the X rotations in the QAOA circuit.
+    ...
+
+    Attributes
+    ----------
+    num_qubits : int
+        the number of qubits in the quantum circuit
+    qc : QuantumCircuit
+        a quantum circuit representing the GHZ state
+
+    Methods
+    -------
+    prepare_state():
+        Prepares the GHZ state.
+    get_decomposed_circuit():
+        Returns the decomposed quantum circuit.
+    get_circuit_draw():
+        Returns the drawn quantum circuit.
+    get_circuit_qasm():
+        Returns the quantum circuit in QASM format.
+    print_counts():
+        Prints the counts of the measurement results.
     """
 
-    def __init__(self, G, p, gamma, beta):
+    def __init__(self, num_qubits):
         """
-        The constructor for the QAOASolver class.
+        Constructs all the necessary attributes for the GHZCircuit object.
 
-        Parameters:
-        G (Graph): The graph representing the TSP.
-        p (int): The number of QAOA steps.
-        gamma (float): The angle for the Ising interactions in the QAOA circuit.
-        beta (float): The angle for the X rotations in the QAOA circuit.
+        Parameters
+        ----------
+            num_qubits : int
+                the number of qubits in the quantum circuit
         """
-        self.G = G
-        self.p = p
-        self.gamma = gamma
-        self.beta = beta
+        self.num_qubits = num_qubits
+        self.qc = QuantumCircuit (self.num_qubits)
 
-    def qaoa_circuit(self):
+    def prepare_state(self):
         """
-        This method creates a QAOA circuit for the given TSP problem.
+        Prepares the GHZ state.
+        """
+        self.qc.h (0)  # generate superposition
+        self.qc.p (np.pi / 2, 0)  # add quantum phase
+        for i in range (1, self.num_qubits):
+            self.qc.cx (0, i)  # 0th-qubit-Controlled-NOT gate on i-th qubit
 
-        Returns:
-        QuantumCircuit: The QAOA circuit for the given TSP problem.
+    def get_decomposed_circuit(self):
         """
-        q = QuantumRegister(self.G.number_of_nodes(), 'q')
-        c = ClassicalRegister(self.G.number_of_nodes(), 'c')
-        qc = QuantumCircuit(q, c)
-        for i in range(self.G.number_of_nodes()):
-            qc.h(i)
-            for j in range(i):
-                if self.G.has_edge(i, j):
-                    qc.cx(i, j)
-                    qc.rz(self.gamma, j)
-                    qc.cx(i, j)
-            qc.rx(self.beta, i)
-            qc.measure(i, i)
-        return qc
+        Returns the decomposed quantum circuit.
 
-    def run_qaoa(self):
+        Returns
+        -------
+        QuantumCircuit
+            the decomposed quantum circuit
         """
-        This method runs the QAOA circuit on a quantum simulator.
+        return self.qc.decompose()
 
-        Returns:
-        dict: The counts of the quantum circuit.
+    def get_circuit_draw(self):
         """
-        qc = self.qaoa_circuit()
-        backend = Aer.get_backend('qasm_simulator')
-        job = execute(qc, backend, shots=1000)
-        result = job.result()
-        return result.get_counts(qc)
+        Returns the drawn quantum circuit.
 
-    def solve(self):
+        Returns
+        -------
+        QuantumCircuit
+            the drawn quantum circuit
         """
-        This method solves the TSP using the QAOA algorithm.
+        return self.qc.draw()
 
-        Returns:
-        tuple: The result of the QAOA algorithm and the most likely sample.
+    def get_circuit_qasm(self):
         """
-        qp = tsp.get_operator(self.G)
-        qaoa = QAOA(optimizer=None, p=self.p, quantum_instance=Aer.get_backend('qasm_simulator'))
-        meo = MinimumEigenOptimizer(qaoa)
-        result = meo.solve(qp)
-        return result, sample_most_likely(result.eigenstate)
+        Returns the quantum circuit in QASM format.
+
+        Returns
+        -------
+        QuantumCircuit
+            the quantum circuit in QASM format
+        """
+        return self.qc
+
+    def print_counts(self):
+        """
+        Prints the counts of the measurement results.
+        """
+        print (self.qc.measure_all ())
+
+
+# Usage
+if __name__ == '__main__':
+    ghz = GHZCircuit (3)  # Create a GHZCircuit object with 3 qubits
+    ghz.prepare_state ()  # Prepare the GHZ state
+    print (ghz.get_circuit_draw ())  # Print the drawn quantum circuit
+    print (ghz.get_decomposed_circuit ())  # Print the decomposed quantum circuit
+    print (ghz.get_circuit_qasm ())  # Print the quantum circuit in QASM format
 ```
 
 Quantum_Non_Linear_Solvers.py: This file contains the implementation of the Quantum Non-Linear Solvers for the TSP.

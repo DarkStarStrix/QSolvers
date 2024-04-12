@@ -1,58 +1,36 @@
-import networkx as nx
-from qiskit import Aer, execute, QuantumCircuit
-from qiskit.aqua.algorithms import QAOA
-from qiskit.optimization.algorithms import MinimumEigenOptimizer
-from qiskit.optimization.applications.ising import tsp
-from qiskit.optimization.applications.ising.common import sample_most_likely
+import numpy as np
+from qiskit import QuantumCircuit
 
 
-class QAOASolver:
-    def __init__(self, G, p, gamma, beta):
-        self.G = G
-        self.p = p
-        self.gamma = gamma
-        self.beta = beta
+class GHZCircuit:
+    def __init__(self, num_qubits):
+        self.num_qubits = num_qubits
+        self.qc = QuantumCircuit (self.num_qubits)
 
-    def qaoa_circuit(self):
-        qc = QuantumCircuit (self.G.number_of_nodes ())
-        for i in range (self.G.number_of_nodes ()):
-            qc.h (i)
-            for j in range (i):
-                if self.G.has_edge (i, j):
-                    qc.cx (i, j)
-                    qc.rz (self.gamma, j)
-                    qc.cx (i, j)
-            qc.rx (self.beta, i)
-            qc.measure (i, i)
-        return qc
+    def prepare_state(self):
+        self.qc.h (0)  # generate superposition
+        self.qc.p (np.pi / 2, 0)  # add quantum phase
+        for i in range (1, self.num_qubits):
+            self.qc.cx (0, i)  # 0th-qubit-Controlled-NOT gate on i-th qubit
 
-    def run_qaoa(self):
-        qc = self.qaoa_circuit ()
-        job = execute (qc, Aer.get_backend ('qasm_simulator'), shots=1000)
-        return job.result ().get_counts ()
+    def get_decomposed_circuit(self):
+        return self.qc.decompose()
 
-    def solve(self):
-        qp = tsp.get_operator (self.G)
-        qaoa = QAOA (p=self.p, quantum_instance=Aer.get_backend ('qasm_simulator'))
-        meo = MinimumEigenOptimizer (qaoa)
-        result = meo.solve (qp)
-        return result, sample_most_likely (result.eigenstate)
+    def get_circuit_draw(self):
+        return self.qc.draw()
+
+    def get_circuit_qasm(self):
+        return self.qc
+
+    # print counts
+    def print_counts(self):
+        print (self.qc.measure_all ())
 
 
-def main():
-    G = nx.Graph ()
-    G.add_edge (0, 1, weight=10)
-    G.add_edge (0, 2, weight=15)
-    G.add_edge (0, 3, weight=20)
-    G.add_edge (1, 2, weight=35)
-    G.add_edge (1, 3, weight=25)
-    G.add_edge (2, 3, weight=30)
-
-    solver = QAOASolver (G, p=1, gamma=0.5, beta=0.5)
-    counts = solver.run_qaoa ()
-    result, most_likely = solver.solve ()
-    print (result)
-    print (most_likely)
-
-
-main ()
+# Usage
+if __name__ == '__main__':
+    ghz = GHZCircuit (3)
+    ghz.prepare_state ()
+    print (ghz.get_circuit_draw ())
+    print (ghz.get_decomposed_circuit ())
+    print (ghz.get_circuit_qasm ())

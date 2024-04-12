@@ -3,7 +3,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-from qiskit import QuantumCircuit, execute, Aer
+from qiskit import QuantumCircuit
 
 
 class QuantumTSP:
@@ -14,73 +14,76 @@ class QuantumTSP:
         self.mutation_rate = mutation_rate
         self.elite_size = elite_size
         self.population = [np.random.permutation (len (cities)) for _ in range (pop_size)]
-        self.fitness = []
-        self.best_fitness = []
-        self.best_individual = []
-        self.calculate_fitness ()
+        self.fitness = self.calculate_fitness ()
+        self.best_individual = self.population [np.argmin (self.fitness)]
+        self.best_fitness = np.min (self.fitness)
 
     def calculate_fitness(self):
-        self.fitness = [self.calculate_route_length (individual) for individual in self.population]
-
-    def calculate_route_length(self, route):
-        return sum (
-            np.linalg.norm (np.array (self.cities [route [i]]) - np.array (self.cities [route [i + 1]])) for i in
-            range (len (self.cities) - 1)) + np.linalg.norm (
-            np.array (self.cities [route [-1]]) - np.array (self.cities [route [0]]))
+        fitness = []
+        for individual in self.population:
+            distance = 0
+            for i in range (len (individual) - 1):
+                distance += np.linalg.norm (self.cities [individual [i]] - self.cities [individual [i + 1]])
+            distance += np.linalg.norm (self.cities [individual [-1]] - self.cities [individual [0]])
+            fitness.append (distance)
+        return fitness
 
     def select_parents(self):
-        parents = []
-        for _ in range (self.elite_size):
-            index = np.argmin (self.fitness)
-            parents.append (self.population.pop (index))
-            self.fitness.pop (index)
+        fitness = 1 / np.array (self.fitness)
+        fitness /= np.sum (fitness)
+        parents = [self.population [i] for i in
+                   np.random.choice (len (self.population), self.elite_size, p=fitness, replace=False)]
         return parents
 
     def crossover(self, parents):
-        return [self.create_child (parents) for _ in range (len (parents))]
-
-    def create_child(self, parents):
-        parent1, parent2 = np.random.choice (len (parents), 2, replace=False)
-        parent1, parent2 = parents [parent1], parents [parent2]
-        start, end = sorted (np.random.choice (len (self.cities), 2, replace=False))
-        child = [-1] * len (self.cities)
-        child [start:end] = parent1 [start:end]
-        remaining_cities = [city for city in parent2 if city not in child]
-        child = [remaining_cities.pop (0) if city == -1 else city for city in child]
-        return child
-
-    def mutate(self, children):
-        for child in children:
-            if np.random.rand () < self.mutation_rate:
-                index1, index2 = np.random.choice (len (self.cities), 2, replace=False)
-                child [index1], child [index2] = child [index2], child [index1]
+        children = []
+        for i in range (self.pop_size - self.elite_size):
+            parent1 = parents [np.random.randint (len (parents))]
+            parent2 = parents [np.random.randint (len (parents))]
+            child = np.copy (parent1)
+            for j in range (len (child)):
+                if np.random.rand () < 0.5:
+                    child [j] = parent2 [j]
+            children.append (child)
         return children
 
-    def run(self):
-        for _ in range (self.generations):
-            parents = self.select_parents ()
-            children = self.crossover (parents)
-            children = self.mutate (children)
-            self.population = parents + children
-            self.calculate_fitness ()
-            self.best_fitness.append (np.min (self.fitness))
-            self.best_individual.append (self.population [np.argmin (self.fitness)])
+    def mutate(self, children):
+        for i in range (len (children)):
+            if np.random.rand () < self.mutation_rate:
+                index1, index2 = np.random.choice (len (children [i]), 2, replace=False)
+                children [i] [index1], children [i] [index2] = children [i] [index2], children [i] [index1]
+        return children
 
-    def plot(self):
-        plt.figure (figsize=(8, 6))
-        x, y = zip (*[self.cities [i] for i in self.best_individual [np.argmin (self.best_fitness)]])
-        plt.plot (x, y, marker='o', linestyle='-')
-        plt.xlabel ('X Coordinate')
-        plt.ylabel ('Y Coordinate')
-        plt.title ('TSP Route')
-        plt.grid (True)
-        plt.show ()
+    def create_circuit(self):
+        n = len (self.cities)
+        qc = QuantumCircuit (n, n)
+        qc.h (range (n))
+        qc.barrier ()
+        for i in range (n):
+            for j in range (n):
+                if i != j:
+                    qc.cp (np.linalg.norm (self.cities [i] - self.cities [j]), i, j)
+        qc.barrier ()
+        qc.h (range (n))
+        qc.barrier ()
+        qc.measure (range (n), range (n))
+        return qc
+
+    def __str__(self):
+        return f'{self.best_individual} {self.best_fitness}'
 
 
 if __name__ == "__main__":
-    cities = [(60, 200), (180, 200), (80, 180), (140, 180), (20, 160), (100, 160), (200, 160), (140, 140), (40, 120),
-              (100, 120), (180, 100), (60, 80), (120, 80), (180, 60), (20, 40), (100, 40), (200, 40), (20, 20),
-              (60, 20), (160, 20)]
-    tsp = QuantumTSP (cities, pop_size=100, generations=100, mutation_rate=0.01, elite_size=20)
-    tsp.run ()
-    tsp.plot ()
+    cities = np.random.rand (10, 2)
+    tsp = QuantumTSP (cities, 100, 100, 0.01, 10)
+    for _ in range (tsp.generations):
+        parents = tsp.select_parents ()
+        children = tsp.crossover (parents)
+        children = tsp.mutate (children)
+        tsp.population = parents + children
+        tsp.fitness = tsp.calculate_fitness ()
+        best_index = np.argmin (tsp.fitness)
+        if tsp.fitness [best_index] < np.min (tsp.best_fitness):
+            tsp.best_individual = tsp.population [best_index]
+            tsp.best_fitness = tsp.fitness [best_index]
+    print (tsp.best_individual, tsp.best_fitness)
