@@ -1,4 +1,4 @@
-from qiskit import QuantumCircuit, execute, Aer
+from qiskit import QuantumCircuit
 from qiskit.visualization import plot_histogram
 
 
@@ -15,9 +15,6 @@ def shor_circuit():
     return qc
 
 
-provider = Aer.get_backend ('qasm_simulator')
-qc = shor_circuit ()
-job = execute (qc, provider, shots=1024)
-result = job.result ()
-counts = result.get_counts (qc)
-plot_histogram (counts)
+# print the counts and draw the circuit
+circuit = shor_circuit ()
+print (circuit)

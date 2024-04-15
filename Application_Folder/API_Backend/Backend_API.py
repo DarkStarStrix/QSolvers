@@ -4,6 +4,7 @@ from wtforms import StringField, SubmitField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Email
 from flask_sqlalchemy import SQLAlchemy
 from textblob import TextBlob
+from Quantum_Logistics_Solvers import Quantum_Genetic_Algorithm, Quantum_Particle_Swarm_Optimization, Quantum_A, Quantum_Ant_Colony, Quantum_Annealing, Quantum_Approximate_Optimization_Algorithm, Quantum_Convex
 
 app = Flask (__name__)
 app.config ['SECRET_KEY'] = 'your-secret-key'
@@ -47,15 +48,9 @@ def register():
     return render_template ('register.html', form=form)
 
 
-@app.route ('/user/<email>', methods=['GET', 'POST'])
-@app.route ('/business/<email>', methods=['GET', 'POST'])
-def user(email):
+@app.route ('/<category>/<email>', methods=['GET', 'POST'])
+def user(category, email):
     return render_template ('user.html', email=email)
-
-
-@app.route ('/pay/<email>', methods=['GET', 'POST'])
-def pay(email):
-    return render_template (request.args.get ('status', 'pay') + '.html', email=email)
 
 
 @app.route ('/feedback', methods=['GET', 'POST'])
@@ -74,6 +69,16 @@ def feedback():
 def index():
     return render_template ('index.html')
 
+
+Algorithm = {
+    'Quantum Genetic Algorithm': Quantum_Genetic_Algorithm,
+    'Quantum Particle Swarm Optimization': Quantum_Particle_Swarm_Optimization,
+    'Quantum Ant Colony Optimization': Quantum_Ant_Colony,
+    'Quantum Simulated Annealing': Quantum_Annealing,
+    'Quantum A*': Quantum_A,
+    'Quantum Approximate Optimization Algorithm': Quantum_Approximate_Optimization_Algorithm,
+    'Quantum Convex': Quantum_Convex,
+}
 
 if __name__ == '__main__':
     app.run (debug=True)

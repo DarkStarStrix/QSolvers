@@ -1,6 +1,5 @@
-from qiskit import QuantumCircuit, execute, Aer
-from qiskit.providers.ibmq import least_busy
-from qiskit.visualization import plot_histogram
+from qiskit import QuantumCircuit
+import matplotlib.pyplot as plt
 
 
 def grover_circuit():
@@ -16,9 +15,6 @@ def grover_circuit():
     return qc
 
 
-provider = Aer.get_backend ('qasm_simulator')
-qc = grover_circuit ()
-job = execute (qc, provider, shots=1024)
-result = job.result ()
-counts = result.get_counts (qc)
-plot_histogram (counts)
+# Draw the circuit
+circuit = grover_circuit ()
+print (circuit)
