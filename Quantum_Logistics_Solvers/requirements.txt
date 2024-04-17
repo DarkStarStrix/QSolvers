@@ -1,0 +1,7 @@
+matplotlib==3.8.2
+numpy==1.26.2
+qiskit==0.45.0
+networkx==3.2.1
+dimod==0.12.13
+dwavebinarycsp~=0.2.0
+pytest==7.4.3
