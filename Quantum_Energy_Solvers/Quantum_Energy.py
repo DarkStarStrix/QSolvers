@@ -1,4 +1,3 @@
-from qiskit import Aer
 from qiskit.utils import QuantumInstance
 from qiskit.opflow import Z, I
 from qiskit.algorithms import VQE

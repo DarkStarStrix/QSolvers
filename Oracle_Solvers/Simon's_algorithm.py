@@ -1,32 +1,29 @@
-# Simons algorithm a black box solver
-
-import numpy as np
-from qiskit import QuantumCircuit, execute, Aer, IBMQ
+from qiskit import QuantumCircuit
 from qiskit.visualization import plot_histogram
-from qiskit.aqua.algorithms import Simon
-from qiskit.aqua.components.oracles import TruthTableOracle
 
-# Load IBM Q account and get the least busy backend device
-provider = IBMQ.load_account()
-backend = provider.get_backend('ibmq_qasm_simulator')
 
-# Set the length of the input string
-n = 4
+# Define the oracle function for Simon's problem
+def simon_oracle(circuit, s):
+    n = len (s)
+    for i, bit in enumerate (s):
+        if bit == '1':
+            circuit.cx (i, n)  # Apply CNOT gate
+    return circuit
 
-# Set the oracle, Simon's algorithm is a black-box algorithm, so we don't need to know the details of the oracle
-oracle = TruthTableOracle('0011')
 
-# Create a Simon algorithm instance
-simon = Simon(oracle)
+# Create a quantum circuit with n qubits
+n = 3  # Example with 3 qubits
+qc = QuantumCircuit (n * 2, n)
 
-# Run the algorithm and get the result
-result = simon.run(backend)
+# Apply Hadamard gates to the first n qubits
+qc.h (range (n))
 
-# Print the result
-print(result['result'])
+# Apply the oracle function (you can replace '101' with your desired hidden bitstring)
+hidden_bitstring = '101'
+qc = simon_oracle (qc, hidden_bitstring)
 
-# Plot the result
-plot_histogram(result['measurement'])
+# Measure the second register
+qc.measure (range (n, 2 * n), range (n))
 
 # print the circuit
-print(simon.construct_circuit(measurement=True))
+print (qc)

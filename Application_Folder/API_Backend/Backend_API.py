@@ -4,7 +4,7 @@ from wtforms import StringField, SubmitField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Email
 from flask_sqlalchemy import SQLAlchemy
 from textblob import TextBlob
-from Quantum_Logistics_Solvers import Quantum_Genetic_Algorithm, Quantum_Particle_Swarm_Optimization, Quantum_A, Quantum_Ant_Colony, Quantum_Annealing, Quantum_Approximate_Optimization_Algorithm, Quantum_Convex
+from Quantum_Logistics_Solvers import Quantum_Genetic_Algorithm
 
 app = Flask (__name__)
 app.config ['SECRET_KEY'] = 'your-secret-key'
@@ -70,14 +70,31 @@ def index():
     return render_template ('index.html')
 
 
+@app.route ('/run_algorithm', methods=['POST'])
+def run_algorithm():
+    # Extract the algorithm name from the request
+    algorithm_name = request.json.get ('algorithm_name')
+
+    # Check if the algorithm is in the Algorithm dictionary
+    if algorithm_name in Algorithm:
+        # Get the algorithm class
+        algorithm_class = Algorithm [algorithm_name]
+
+        # Create an instance of the algorithm
+        algorithm = algorithm_class ()
+
+        # Run the algorithm
+        result = algorithm.run ()
+
+        # Return the result
+        return {"result": result}, 200
+    else:
+        # Return an error message if the algorithm is not found
+        return {"error": "Algorithm not found"}, 404
+
+
 Algorithm = {
     'Quantum Genetic Algorithm': Quantum_Genetic_Algorithm,
-    'Quantum Particle Swarm Optimization': Quantum_Particle_Swarm_Optimization,
-    'Quantum Ant Colony Optimization': Quantum_Ant_Colony,
-    'Quantum Simulated Annealing': Quantum_Annealing,
-    'Quantum A*': Quantum_A,
-    'Quantum Approximate Optimization Algorithm': Quantum_Approximate_Optimization_Algorithm,
-    'Quantum Convex': Quantum_Convex,
 }
 
 if __name__ == '__main__':

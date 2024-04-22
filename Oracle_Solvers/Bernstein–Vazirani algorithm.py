@@ -2,7 +2,6 @@
 
 # Import the QISKit SDK
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
-from qiskit import execute, Aer
 
 # Create a Quantum Register with 3 qubits
 q = QuantumRegister(3)
@@ -33,12 +32,6 @@ for qubit in q:
 for i in range(3):
     qc.measure(q[i], c[i])
 
-# Compile and run the Quantum circuit on a simulator backend
-backend_sim = Aer.get_backend('qasm_simulator')
-job_sim = execute(qc, backend_sim)
-result_sim = job_sim.result()
-
-# Show the results
-print("simulation: ", result_sim)
-print(result_sim.get_counts(qc))
+# Draw the circuit
 qc.draw()
+print(qc)
