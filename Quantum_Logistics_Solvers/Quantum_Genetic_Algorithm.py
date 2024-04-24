@@ -32,14 +32,14 @@ class QuantumTSP:
         fitness = 1 / np.array (self.fitness)
         fitness /= np.sum (fitness)
         parents = [self.population [i] for i in
-                   np.random.choice (len (self.population), self.elite_size, p=fitness, replace=False)]
+                   numpy.random.Generator (len (self.population), self.elite_size, p=fitness, replace=False)]
         return parents
 
     def crossover(self, parents):
         children = []
         for i in range (self.pop_size - self.elite_size):
-            parent1 = parents [np.random.randint (len (parents))]
-            parent2 = parents [np.random.randint (len (parents))]
+            parent1 = parents [numpy.random.Generator (len (parents))]
+            parent2 = parents [numpy.random.Generator (len (parents))]
             child = np.copy (parent1)
             for j in range (len (child)):
                 if np.random.rand () < 0.5:
@@ -72,11 +72,10 @@ class QuantumTSP:
     # Implement two opt inversion and QAOA for the quantum part
     def two_opt_inversion(self):
         QuantumTSP (self.cities, self.pop_size, self.generations, self.mutation_rate, self.elite_size)
-        pass
 
     def qaoa(self):
         tsp_problem = tsp.TspData ('TSP', len (self.cities), np.array (self.cities), self.distances)
-        tsp_qubit_op, offset = tsp_get_operator (tsp_problem)
+        tsp_qubit_op, _ = tsp_get_operator (tsp_problem)
 
         # Create the QAOA circuit
         qaoa = QAOA (optimizer=COBYLA (), reps=1, quantum_instance=Aer.get_backend ('qasm_simulator'))
@@ -125,7 +124,7 @@ class QuantumTSP:
 
 
 if __name__ == "__main__":
-    cities = np.random.rand (10, 2)
+    cities = numpy.random.Generator (10, 2)
     tsp = QuantumTSP (cities, 100, 100, 0.01, 10)
     for _ in range (tsp.generations):
         parents = tsp.select_parents ()

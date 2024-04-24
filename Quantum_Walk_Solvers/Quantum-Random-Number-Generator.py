@@ -13,7 +13,7 @@ class QuantumRandomNumberGenerator:
 
     def get_random_number(self):
         probabilities = np.abs (self.qubits [0]) / np.sum (np.abs (self.qubits [0]))
-        return np.random.choice ([0, 1], p=probabilities)
+        return numpy.random.Generator ([0, 1], p=probabilities)
 
     def get_random_numbers(self, num):
         return [self.get_random_number () for _ in range (num)]

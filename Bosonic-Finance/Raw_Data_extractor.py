@@ -19,7 +19,7 @@ class DataExtractor:
 
     def forecast(self):
         probabilities = self.measure_quantum_state (self.create_quantum_state ())
-        return np.random.choice (self.stock_data, size=8, p=probabilities / np.sum (probabilities)), probabilities
+        return numpy.random.Generator (self.stock_data, size=8, p=probabilities / np.sum (probabilities)), probabilities
 
     @staticmethod
     def create_quantum_state():

@@ -22,7 +22,6 @@ class GHZCircuit:
     def get_circuit_qasm(self):
         return self.qc
 
-    # print counts
     def print_counts(self):
         print (self.qc.measure_all ())
 

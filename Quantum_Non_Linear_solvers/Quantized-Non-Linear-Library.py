@@ -1,4 +1,4 @@
-from qutip import *
+from qutip import destroy, basis, sesolve
 import numpy as np
 
 
@@ -52,7 +52,6 @@ class NavierStokesSolver(NonLinearSolver):
         self.parameters = params
 
     def solve(self):
-        navier_stokes_params = self.parameters
         solver = NavierStokesSolver ()
         solver.initialize ()
         solver.solve ()

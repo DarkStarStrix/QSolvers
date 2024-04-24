@@ -11,7 +11,8 @@ class NonLinearSchrodingerSolver:
         self.time_array = time_array
         self.solution = None
 
-    def nonlinear_term(self, state, t, x, y):
+    @staticmethod
+    def nonlinear_term(x, y):
         u = np.sin (np.pi * x) * np.cos (np.pi * y)
         v = -np.cos (np.pi * x) * np.sin (np.pi * y)
         p = -0.25 * (np.cos (2 * np.pi * x) + np.cos (2 * np.pi * y))
@@ -19,7 +20,7 @@ class NonLinearSchrodingerSolver:
 
     def solve(self, x, y):
         self.solution = sesolve (self.hamiltonian, self.initial_state, self.time_array,
-                                 e_ops=[lambda state, t: self.nonlinear_term (state, t, x, y)])
+                                 e_ops=[lambda state, t: self.nonlinear_term (state, t)])
 
     def visualize(self):
         abs_states = [np.abs (state.full ()) for state in self.solution.states]
