@@ -72,8 +72,11 @@ def index():
 
 @app.route ('/run_algorithm', methods=['POST'])
 def run_algorithm():
-    # Extract the algorithm name from the request
+    # Extract the algorithm name and the number of cities from the request
     algorithm_name = request.json.get ('algorithm_name')
+    num_cities = request.json.get ('num_cities')
+
+    print (f"Received algorithm name: {algorithm_name}")  # Debugging statement
 
     # Check if the algorithm is in the Algorithm dictionary
     if algorithm_name in Algorithm:
@@ -83,8 +86,8 @@ def run_algorithm():
         # Create an instance of the algorithm
         algorithm = algorithm_class ()
 
-        # Run the algorithm
-        result = algorithm.run ()
+        # Run the algorithm with the provided number of cities
+        result = algorithm.run (num_cities)
 
         # Return the result
         return {"result": result}, 200

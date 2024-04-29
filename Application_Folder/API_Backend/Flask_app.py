@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from Quantum_Logistics_Solvers import run_algorithm
+import Quantum_Genetic_Algorithm
 import base64
 from io import BytesIO
 
@@ -10,6 +10,7 @@ app = Flask (__name__)
 def run_algorithm_route():
     # Extract the algorithm name and the number of cities from the request
     data = request.get_json ()
+    print(f"Received data: {data}")  # Print the request data
     algorithm_name = data.get ('algorithm')
     num_cities = data.get ('num_cities')
 
