@@ -145,7 +145,7 @@ The main part of the code creates a `Graph` object with 4 nodes, initializes a `
 G = Graph (4)
 tsp_solver = TSPSolver (G)
 optimal_route = tsp_solver.solve ()
-tsp_solver.plot_route (optimal_route)
+plot_route (optimal_route)
 ```
 
 ## Quantum A* Algorithm

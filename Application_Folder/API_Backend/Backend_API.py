@@ -4,7 +4,7 @@ from wtforms import StringField, SubmitField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Email
 from flask_sqlalchemy import SQLAlchemy
 from textblob import TextBlob
-from Quantum_Logistics_Solvers import Quantum_Genetic_Algorithm
+from Quantum_Logistics_Solvers.Quantum_Genetic_Algorithm import QuantumTSP
 
 app = Flask (__name__)
 app.config ['SECRET_KEY'] = 'your-secret-key'
@@ -74,9 +74,9 @@ def index():
 def run_algorithm():
     # Extract the algorithm name and the number of cities from the request
     algorithm_name = request.json.get ('algorithm_name')
-    num_cities = request.json.get ('num_cities')
+    num_cities = int (request.json.get ('num_cities'))  # Convert num_cities to an integer
 
-    print (f"Received algorithm name: {algorithm_name}")  # Debugging statement
+    print (f"Running {algorithm_name} with {num_cities} cities")  # Log the number of cities
 
     # Check if the algorithm is in the Algorithm dictionary
     if algorithm_name in Algorithm:
@@ -84,21 +84,25 @@ def run_algorithm():
         algorithm_class = Algorithm [algorithm_name]
 
         # Create an instance of the algorithm
-        algorithm = algorithm_class ()
+        algorithm = algorithm_class (num_cities, pop_size=100, generations=500, mutation_rate=0.01, elite_size=20)
 
         # Run the algorithm with the provided number of cities
-        result = algorithm.run (num_cities)
+        result = algorithm.execute ()  # Call the execute method
 
-        # Return the result
-        return {"result": result}, 200
+        # Print "Plot printed" in the console
+        print ("Plot printed")
+
+        # Return the result and the plot as a base64 string
+        return {"result": result, "plot": result ['plot']}, 200
     else:
         # Return an error message if the algorithm is not found
         return {"error": "Algorithm not found"}, 404
 
 
 Algorithm = {
-    'Quantum Genetic Algorithm': Quantum_Genetic_Algorithm,
+    'Quantum Genetic Algorithm': QuantumTSP
 }
+
 
 if __name__ == '__main__':
     app.run (debug=True)
