@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 # Initialize the BosonSampling class
 n = 3
 m = 5
-U = np.random.rand(m, m) + 1j * np.random.rand(m, m)
+U = numpy.random.Generator(m, m) + 1j * numpy.random.Generator(m, m)
 boson_sampling = BosonSampling(n, m, U)
 
 # Define the data from the BosonSampling simulation

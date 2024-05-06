@@ -24,18 +24,22 @@ and a 45-minute call to discuss the library and for the business to get a better
 The project uses the following quantum hybrid algorithms:
 
 ## Logistics Solvers
-1. Quantum Genetic Algorithm
-2. Quantum Convex Hull Algorithm
-3. Quantum Annealing
-5. Quantum A* Algorithm
-6. quantum particle swarm optimization
-7. Quantum ant colony optimization
-9. Quantum approximate optimization algorithm
+<list type="decimal">
+<li>Quantum Genetic Algorithm</li>
+<li>Quantum Convex Hull Algorithm</li>
+<li>Quantum Annealing</li>
+<li>Quantum A* Algorithm</li>
+<li>quantum particle swarm optimization</li>
+<li>Quantum ant colony optimization</li>
+<li>Quantum approximate optimization algorithm</li>
+</list>
 
 ## Non-linear Solvers
-11. Quantum non-linear solvers 
-12. Quantum non-linear naiver stokes solvers
-13. Quantum non-linear schrodinger solvers
+<list start="11" type="decimal">
+<li>Quantum non-linear solvers</li>
+<li>Quantum non-linear naiver stokes solvers</li>
+<li>Quantum non-linear schrodinger solvers</li>
+</list>
 
 Each algorithm is implemented in Python using the Qiskit library for quantum computing.
 

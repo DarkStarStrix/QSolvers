@@ -5,396 +5,319 @@
 This page provides a detailed explanation of the quantum hybrid algorithms used in our project.
 
 ## Quantum Genetic Algorithm
+The provided code is a Python implementation of a Quantum Genetic Algorithm to solve the Traveling Salesman Problem (TSP). The TSP is a classic algorithmic problem in the field of computer science and operations research which focuses on optimization. In this problem, a salesman is given a list of cities and must determine the shortest route that allows him to visit each city once and return to his original location.
 
-The Quantum Genetic Algorithm is a variant of the classical genetic algorithm that leverages quantum computing principles. It uses quantum bits (qubits) instead of classical bits, which allows it to explore a larger search space.
-so the workflow of the quantum genetic algorithm is as follows:
+The main class in this code is `QuantumTSP`. This class is initialized with a set of cities, population size, number of generations, mutation rate, and elite size. The cities are represented as a 2D numpy array, where each row is a city and the columns are the x and y coordinates of the city. The population is a list of permutations of the indices of the cities, representing different routes a salesman can take.
 
-1. Initialize the population of candidate solutions.
-The initialize_population method is responsible for creating the initial population of routes. 
-Each route is a permutation of the cities, and the number of routes is determined by the population size (self.pop_size).
 ```python
-self.population = [np.random.permutation (len (self.cities)) for _ in range (self.pop_size)]
+self.cities = cities
+self.population = [np.random.permutation (len (cities)) for _ in range (pop_size)]
 ```
 
-2. Evaluate the fitness of each candidate solution.
-The calculate_fitness method calculates the fitness of each individual in the population. The fitness of an individual is the total distance of the route, which is calculated by the calculate_route_length method.
+The `calculate_fitness` method calculates the total distance of each route in the population. The distance between two cities is calculated using the Euclidean distance.
+
 ```python
-self.fitness = [self.calculate_route_length (route) for route in self.population]
+distance += np.linalg.norm (self.cities [individual [i]] - self.cities [individual [i + 1]])
 ```
 
-3. Select the parents for the next generation.
-The select_parents method selects the parents for the next generation. The parents are the individuals with the shortest routes, and the number of parents is determined by the elite size (self.elite_size).
+The `select_parents` method selects a subset of the population to be parents for the next generation. The selection is done probabilistically, with routes having lower total distance (higher fitness) being more likely to be selected.
+
 ```python
-parents.append (self.population.pop (index))
-self.fitness.pop (index)
+parents = [self.population [i] for i in np.random.choice (len (self.population), self.elite_size, p=fitness, replace=False)]
 ```
 
-4. Create the offspring by applying crossover 
-The crossover method generates the children for the next generation by performing crossover on the parents. The create_child method is used to create a child by selecting a subset of the route from one parent and filling in the remaining cities from the other parent.
+The `crossover` method generates a new population by mixing the routes of two parents. For each position in the route, it randomly chooses whether to take the city from the first parent or the second parent.
+
 ```python
-children.append (self.create_child (parents))
-```
-5. Apply mutation to the offspring.
-The mutate method introduces variation in the population by swapping two cities in the route of a child with a certain probability (self.mutation_rate).
-```python
-child [index1], child [index2] = child [index2], child [index1]
+if np.random.rand () < 0.5:
+    child [j] = parent2 [j]
 ```
 
-6. The variable neighborhood search with local search with QAOA
+The `mutate` method introduces randomness into the population by swapping two cities in the route of each individual with a certain probability (mutation rate).
+
 ```python
-def variable_neighborhood_search(self, children):
-        for child in children:
-            if np.random.rand () < self.mutation_rate:
-                self.local_search (child)
-        return children
+if np.random.rand () < self.mutation_rate:
+    index1, index2 = np.random.choice (len (children [i]), 2, replace=False)
+    children [i] [index1], children [i] [index2] = children [i] [index2], children [i] [index1]
+```
 
-    def local_search(self, child):
-        # Create a QAOA circuit
-        qaoa = QAOA (optimizer=COBYLA (), p=1, quantum_instance=QuantumInstance (qk.Aer.get_backend ('qasm_simulator')))
+The `create_circuit` method creates a quantum circuit using the Qiskit library. This method is not used in the main loop of the program, so it's unclear how it fits into the overall algorithm.
 
-        # Define the TSP problem for QAOA
-        tsp_qaoa = tsp.TspData ('tsp', len (self.cities), np.array (self.cities),
-                                self.calculate_distance_matrix (child))
+Finally, the main loop of the program runs for a certain number of generations. In each generation, it selects parents from the current population, generates a new population with the `crossover` and `mutate` methods, and then replaces the old population with the new one. It also keeps track of the best (shortest) route found so far.
 
-        # Convert the TSP problem to an Ising problem
-        ising_qaoa = tsp.get_operator (tsp_qaoa)
-
-        # Run QAOA on the Ising problem
-        result_qaoa = qaoa.compute_minimum_eigenvalue (ising_qaoa [0])
-
-        # Get the optimal route from the QAOA result
-        optimal_route_qaoa = tsp.get_tsp_solution (result_qaoa)
-
-        # Replace the child with the optimal route
-        child [:] = optimal_route_qaoa
+```python
+for _ in range (tsp.generations):
+    parents = tsp.select_parents ()
+    children = tsp.crossover (parents)
+    children = tsp.mutate (children)
+    tsp.population = parents + children
+    tsp.fitness = tsp.calculate_fitness ()
+    best_index = np.argmin (tsp.fitness)
+    if tsp.fitness [best_index] < np.min (tsp.best_fitness):
+        tsp.best_individual = tsp.population [best_index]
+        tsp.best_fitness = tsp.fitness [best_index]
 ```
 
 
 ## Quantum Convex Hull Algorithm
+The provided code is a Python implementation of a quantum approach to solve the Traveling Salesman Problem (TSP). The TSP is a classic algorithmic problem in the field of computer science and operations research which focuses on optimization. In this problem, a salesman is given a list of cities and must determine the shortest route that allows him to visit each city once and return to his original location.
 
-The Quantum Convex Hull Algorithm is a quantum algorithm for finding the convex hull of a set of points. It uses quantum parallelism to explore all possible subsets of points simultaneously.
+The main class in this code is `TSP`. This class is initialized with a set of cities and the distances between them. The cities are represented as a dictionary, where each key-value pair is a city and its corresponding index. The distances are represented as a 2D numpy array, where each row and column corresponds to a city and the value at the intersection is the distance between the two cities.
 
-The provided code is a Python implementation of a Quantum Convex Hull Algorithm for solving the Traveling Salesman Problem (TSP). The TSP is a classic algorithmic problem in the field of computer science and operations research focusing on optimization. 
-
-In this problem, a salesman is given a list of cities and must determine the shortest route that allows him to visit each city once and return to his original location.  The code begins by defining a function create_circuit(distances). 
-
-This function takes a list of distances between cities as input and returns a quantum circuit. The quantum circuit is created using the Qiskit library, which is a Python library for quantum computing. The function first creates a quantum register and a classical register, each with a number of qubits/bits equal to the number of cities. 
-
-It then applies a Hadamard gate to all qubits, creating a superposition of states. After that, it applies a controlled phase rotation gate between each pair of qubits, with the phase being determined by the distance between the corresponding cities. 
-Finally, it applies another Hadamard gate to all qubits and measures the result.
 ```python
-n = len(distances)
-q = QuantumRegister(n, 'q')
-c = ClassicalRegister(n, 'c')
-qc = QuantumCircuit(q, c)
-qc.h(q)
-qc.barrier()
-for i in range(n):
-    for j in range(n):
+self.cities = cities
+self.distances = distances
+```
+
+The `create_circuit` method creates a quantum circuit using the Qiskit library. The circuit is initialized with a Hadamard gate (`qc.h`) applied to each qubit, which puts the qubits into a superposition of states. Then, a controlled phase rotation (`qc.cp`) is applied between each pair of qubits, with the phase rotation angle being the distance between the corresponding cities. Finally, another Hadamard gate is applied to each qubit and the qubits are measured.
+
+```python
+qc = QuantumCircuit (n, n)
+qc.h (range (n))
+# ...
+for i in range (n):
+    for j in range (n):
         if i != j:
-            qc.cp(distances[i][j], q[i], q[j])
-qc.barrier()
-qc.h(q)
-qc.barrier()
-qc.measure(q, c)
+            qc.cp (self.distances [i] [j], i, j)
+# ...
+qc.h (range (n))
+qc.measure (range (n), range (n))
 ```
-The code then defines an optimizer and a quantum instance for execution. 
 
-The optimizer is used to find the optimal parameters for the quantum circuit, and the quantum instance specifies where and how the quantum circuit should be run. 
+The `main` function initializes the `TSP` class with a set of cities and distances, and then prints the quantum circuit.
 
-In this case, the optimizer is COBYLA with a maximum of 1000 iterations, and the quantum instance is a simulator provided by Qiskit.
 ```python
-optimizer = COBYLA(maxiter=1000)
-backend = Aer.get_backend('qasm_simulator')
-quantum_instance = QuantumInstance(backend, shots=1000)
+cities = {'A': 0, 'B': 1, 'C': 2, 'D': 3}
+distances = [[0, 1, 2, 3], [1, 0, 1, 2], [2, 1, 0, 1], [3, 2, 1, 0]]
+tsp = TSP (cities, distances)
+x = tsp.qc.draw ()
+print (x)
 ```
-Next, the code defines a QuadraticProgram representing the TSP problem. A QuadraticProgram is a mathematical optimization model that allows you to specify an optimization problem in terms of decision variables, an objective function, and various constraints. 
 
-The code then creates an Ising Hamiltonian for the given QuadraticProgram. The Ising Hamiltonian is a mathematical representation of the energy of a system of interacting spins, and it is used in the Variational Quantum Eigensolver (VQE) algorithm to find the ground state energy of the system.
-```python
-quadratic_program = QuadraticProgram()
-coefficients = {}
-distances = quadratic_program.objective.linear.to_dict()
-for i in range(len(distances)):
-    for j in range(len(distances)):
-        if i != j:
-            coefficients[(i, j)] = distances[i][j]
-```
-The code then uses the VQE algorithm to solve the convex hull problem. The VQE algorithm is a hybrid quantum-classical algorithm that uses a classical optimizer to find the optimal parameters for a quantum circuit. 
-The result of the VQE algorithm is the optimized TSP solution.
-```python
-vqe = VQE(quantum_instance=quantum_instance)
-minimum_eigen_optimizer = MinimumEigenOptimizer(vqe)
-result = minimum_eigen_optimizer.solve(quadratic_program)
-x = result.x
-```
-Finally, the code defines a function refine_solution(x) that refines the solution if necessary. This function could, for example, use a classical optimization algorithm to further improve the solution found by the VQE algorithm.
-```python
-def refine_solution(x):
-    return x
-```
+This code represents a quantum approach to the TSP, where the cities are represented as qubits in a quantum circuit, and the distances between cities are represented as phase rotations between the qubits. The goal is to find the state of the qubits that minimizes the total phase, which corresponds to the shortest route in the TSP.
 
 ## Quantum Annealing
+The provided code is a Python implementation of the Traveling Salesman Problem (TSP) using Quantum Annealing, specifically with the D-Wave system. The TSP is a classic problem in the field of computer science and operations research, focusing on optimization. In this problem, a salesman is given a list of cities and must determine the shortest route that allows him to visit each city once and return to his original location.
 
-Quantum Annealing is a metaheuristic for finding the global minimum of a given objective function over a given set of candidate solutions. It uses quantum fluctuations to escape local minima in the search space.
+The code begins by importing the `dimod` library, which is a shared API for binary quadratic model samplers. It provides a binary quadratic model class that contains Ising and quadratic unconstrained binary optimization models used by samplers such as the D-Wave system.
 
-The provided code is a Python implementation of a Quantum Ant Colony Optimization (QACO) algorithm for solving the Traveling Salesman Problem (TSP). 
-
-The TSP is a classic algorithmic problem in the field of computer science and operations research focusing on optimization. In this problem, a salesman is given a list of cities and must determine the shortest route that allows him to visit each city once and return to his original location.  
-
-The code begins by defining a method _create_qubo(self). This method creates a Quadratic Unconstrained Binary Optimization (QUBO) problem for the TSP. 
-
-The QUBO problem is represented as a dictionary where the keys are tuples representing the nodes (i, j), and the values are the weights of the edges between these nodes. The method iterates over all pairs of nodes and assigns the weight of the edge between them to the corresponding key in the QUBO dictionary.
 ```python
-QUBO = {}
-for i in range(self.num_nodes):
-    for j in range(i + 1, self.num_nodes):
-        for k in range(self.num_nodes):
-            for l in range(self.num_nodes):
-                if i != j and i != k and i != l and j != k and j != l and k != l:
-                    QUBO[(i, j)] = self.graph[i][j]['weight']
-                    QUBO[(j, k)] = self.graph[j][k]['weight']
-                    QUBO[(k, l)] = self.graph[k][l]['weight']
+import dimod
 ```
-The solve(self) method solves the TSP using the D-Wave quantum annealer. It uses the sample_qubo method to find the solution, which is a dictionary where the keys are the nodes and the values are either 0 or 1, indicating whether the node is included in the solution or not. 
-The method then extracts the nodes that are included in the solution and returns them as the route.
+
+The `Graph` class is a simple representation of a fully connected graph. It is initialized with a number of nodes, and creates a dictionary where each key is a node and its value is another dictionary representing the other nodes it's connected to. The inner dictionary's keys are the connected nodes and the values are the weights of the edges, which are set to 1 in this case.
+
 ```python
-EmbeddingComposite(DWaveSampler())
-response = dimod.ExactSolver().sample_qubo(self.qubo)
-solution = response.first.sample
-route = [node for node, bit in solution.items() if bit == 1]
+class Graph:
+    def __init__(self, num_nodes):
+        self.num_nodes = num_nodes
+        self.graph = {i: {j: 1 for j in range (num_nodes) if i != j} for i in range (num_nodes)}
 ```
-Finally, the plot_route(self, route) method visualizes the solution to the TSP. It uses the NetworkX and Matplotlib libraries to draw the graph and highlight the nodes that are included in the solution. 
 
-The nx.  Draw function is used to draw the graph, and the nx.draw_networkx_nodes function is used to highlight the nodes in the solution.
+The `TSPSolver` class is where the quantum annealing happens. It is initialized with a `Graph` object and creates a Quadratic Unconstrained Binary Optimization (QUBO) model from the graph. The `_create_qubo` method generates a dictionary where each key is a tuple representing an edge between two nodes, and the value is the weight of that edge.
+
 ```python
-pos = nx.spring_layout(self.graph)
-nx.draw(self.graph, pos, with_labels=True, node_size=500)
-nx.draw_networkx_nodes(self.graph, pos, nodelist=route, node_color='r')
-labels = {i: i for i in route}
-nx.draw_networkx_labels(self.graph, pos, labels=labels)
-plt.title("TSP Route")
-plt.show()
+class TSPSolver:
+    def __init__(self, graph):
+        self.graph = graph.graph
+        self.qubo = self._create_qubo ()
 ```
-In summary, this code uses a Quantum Ant Colony Optimization (QACO) algorithm to solve the TSP. 
 
-The QACO algorithm is a quantum version of the classical Ant Colony Optimization (ACO) algorithm, which is a probabilistic technique for solving computational problems which can be reduced to finding good paths through graphs. 
+The `solve` method uses the `dimod.ExactSolver` to find the solution that minimizes the QUBO. The `sample_qubo` method returns a sample set, which is a collection of samples, in order of increasing energy. The solution to the problem is the sample with the lowest energy, which is accessed with `response.first.sample`.
 
-The quantum version of the algorithm uses quantum annealing to find the optimal solution.
+```python
+def solve(self):
+    response = dimod.ExactSolver ().sample_qubo (self.qubo)
+    return [node for node, bit in response.first.sample.items () if bit == 1]
+```
 
+Finally, the `plot_route` method prints the optimal route, which is a list of nodes in the order they should be visited.
+
+```python
+@staticmethod
+def plot_route(route):
+    print ("TSP Route:", route)
+```
+
+The main part of the code creates a `Graph` object with 4 nodes, initializes a `TSPSolver` with the graph, solves the TSP, and then prints the optimal route.
+
+```python
+G = Graph (4)
+tsp_solver = TSPSolver (G)
+optimal_route = tsp_solver.solve ()
+plot_route (optimal_route)
+```
 
 ## Quantum A* Algorithm
+The provided Python code is an implementation of a quantum approach to solve the Traveling Salesman Problem (TSP) using the Qiskit library. The TSP is a classic optimization problem where a salesman needs to find the shortest possible route that allows him to visit a set of cities once and return to the original city.
 
-The Quantum A* Algorithm is a quantum version of the classical A* search algorithm. It uses a quantum heuristic function to guide the search process, which can potentially explore the search space more efficiently.
+The `TSP` class is a simple data structure to hold the cities and the distances between them. The cities are represented as a dictionary where each key is a city name and its corresponding value is an index. The distances between the cities are represented as a 2D list.
 
-The provided code is a Python implementation of the Quantum A* Algorithm for solving the Traveling Salesman Problem (TSP). The TSP is a classic algorithmic problem in the field of computer science and operations research focusing on optimization. 
-
-In this problem, a salesman is given a list of cities and must determine the shortest possible route that visits each city once and returns to the origin city.  The QuantumAStar class is initialized with a tsp object, which represents the TSP problem to be solved. 
-
-The initialization method also sets up various attributes such as the start city, the list of cities, the number of cities, and the distance matrix. 
-It then calls the make_qc method to create a quantum circuit for the given TSP problem.
 ```python
-def __init__(self, tsp):
-    self.qc = None
-    self.tsp = tsp
-    self.start_city = tsp.get_start_city ()
-    self.cities_list = tsp.get_cities_list ()
-    self.cities_list_without_start = tsp.get_cities_list_without_start ()
-    self.number_of_cities = tsp.get_number_of_cities ()
-    self.distance_matrix = tsp.get_distance_matrix ()
-    self.distance_matrix_without_start = [row [1:] for row in self.distance_matrix [1:]]
-    self.make_qc ()
+class TSP:
+    def __init__(self, cities, distances):
+        self.cities = cities
+        self.distances = distances
 ```
-The make_qc method creates a quantum circuit with the number of qubits and classical bits equal to the number of cities. 
 
-It applies a Hadamard gate to all qubits to create a superposition of states. Then, it applies a controlled phase rotation gate between each pair of qubits, with the phase being determined by the distance between the corresponding cities. 
+The `QuantumAStar` class is where the quantum computation happens. It is initialized with a `TSP` object and creates a quantum circuit in the `make_qc` method. This circuit is initialized with a Hadamard gate (`qc.h`) applied to each qubit, which puts the qubits into a superposition of states. Then, the qubits are measured.
 
-After another Hadamard gate and a barrier, it measures all qubits.
 ```python
-def make_qc(self):
-    self.qc = QuantumCircuit (self.number_of_cities, self.number_of_cities)
-    self.qc.h (range (self.number_of_cities))
-    self.qc.barrier ()
-    for i in range (self.number_of_cities):
-        for j in range (self.number_of_cities):
-            if i != j:
-                self.qc.cp (2 * np.arcsin (np.sqrt (self.distance_matrix_without_start [i] [j] / 10)), i, j)
-    self.qc.barrier ()
-    self.qc.h (range (self.number_of_cities))
-    self.qc.barrier ()
-    self.qc.measure (range (self.number_of_cities), range (self.number_of_cities))
+class QuantumAStar:
+    def __init__(self, tsp):
+        self.tsp = tsp
+        self.qc = self.make_qc ()
+
+    def make_qc(self):
+        qc = QuantumCircuit (len (self.tsp.cities), len (self.tsp.cities))
+        qc.h (range (len (self.tsp.cities)))
+        qc.measure (range (len (self.tsp.cities)), range (len (self.tsp.cities)))
+        return qc
 ```
-The run_qc method runs the quantum circuit on a quantum simulator and returns the counts of the quantum circuit.
+
+The `run_qc` method runs the quantum circuit on a quantum simulator (`qasm_simulator`) provided by Qiskit's Aer module. It returns the counts of the measurement results.
+
 ```python
 def run_qc(self):
     backend = Aer.get_backend ('qasm_simulator')
-    job = execute (self.qc, backend, shots=1000)
+    job = backend.run (self.qc, shots=1024)
     result = job.result ()
     counts = result.get_counts ()
     return counts
 ```
-The get_best_path method gets the best path from the counts. It iterates over all paths in the counts and calculates the cost of each path using the get_cost method. The best path is the one with the lowest cost.
+
+The `main` function initializes the `TSP` and `QuantumAStar` classes, runs the quantum circuit, and prints the measurement results. It also plots a histogram of the results using Qiskit's `plot_histogram` function.
+
 ```python
-def get_best_path(self, counts):
-    best_path = None
-    best_path_cost = None
-    for path in counts:
-        cost = self.get_cost (path)
-        if best_path_cost is None or cost < best_path_cost:
-            best_path = path
-            best_path_cost = cost
-    return best_path, best_path_cost
+def main():
+    cities = {'A': 0, 'B': 1, 'C': 2, 'D': 3}
+    distances = [[0, 1, 2, 3], [1, 0, 1, 2], [2, 1, 0, 1], [3, 2, 1, 0]]
+    tsp = TSP (cities, distances)
+    quantum_a_star = QuantumAStar (tsp)
+    counts = quantum_a_star.run_qc ()
+    print (counts)
+    plot_histogram (counts)
 ```
-The get_cost method calculates the cost of a path. The cost of a path is the sum of the distances from the start city to all cities in the path.
-```python
-def get_cost(self, path):
-    cost = 0
-    for i in range (self.number_of_cities):
-        if path [i] == '1':
-            cost += self.distance_matrix [self.start_city] [i]
-    return cost
-```
-The get_path method gets the path from the counts. It iterates over all cities and adds the cities that are included in the path to the path list.
-```python
-def get_path(self, path):
-    path_list = []
-    for i in range (self.number_of_cities):
-        if path [i] == '1':
-            path_list.append (self.cities_list [i])
-    return path_list
-```
-In summary, this code uses a Quantum A* Algorithm to solve the TSP. 
-The Quantum A* Algorithm is a quantum version of the classical A* algorithm, which is a graph traversal and path search algorithm that is often used in many fields of computer science due to its completeness, optimality, and optimal efficiency.
+
+In summary, this code represents a quantum approach to the TSP, where the cities are represented as qubits in a quantum circuit. The goal is to find the state of the qubits that minimizes the total distance, which corresponds to the shortest route in the TSP.
 
 ## Quantum Particle Swarm Optimization
+The provided Python code is an implementation of a Quantum Particle Swarm Optimization (QPSO) algorithm using the Qiskit library. The QPSO is a quantum version of the classical Particle Swarm Optimization (PSO) algorithm, which is a computational method that optimizes a problem by iteratively trying to improve a candidate solution.
 
-Quantum Particle Swarm Optimization is a variant of the classical particle swarm optimization algorithm that uses quantum mechanics principles. It uses a swarm of particles that move in the search space according to quantum rules.
+The `QuantumParticle` class represents a single particle in the swarm. Each particle is represented by a quantum circuit, which is initialized in the constructor. The quantum circuit is created with a number of qubits specified by `num_qubits`. The Hadamard gate (`self.circuit.h`) is applied to all qubits, putting them into a superposition of states. Finally, a measurement is performed on all qubits (`self.circuit.measure_all()`).
 
-The provided code is a Python implementation of the Quantum Particle Swarm Optimization (QPSO) algorithm. The QPSO algorithm is a quantum version of the classical Particle Swarm Optimization (PSO) algorithm, which is a computational method that optimizes a problem by iteratively trying to improve a candidate solution with regard to a given measure of quality. 
+```python
+class QuantumParticle:
+    def __init__(self, num_qubits):
+        self.circuit = QuantumCircuit (num_qubits)
+        self.circuit.h (range (num_qubits))
+        self.circuit.measure_all ()
+```
 
-The code is divided into two classes: QuantumParticle and QuantumSwarm.  The QuantumParticle class represents a quantum particle in the QPSO algorithm. Each quantum particle is represented by a quantum circuit. 
-The quantum circuit is created with a number of qubits equal to the number of cities in the problem. The __init__ method initializes the quantum circuit by applying a Hadamard gate to all qubits to create a superposition of states, and then measures all qubits.
+The `QuantumSwarm` class represents a swarm of quantum particles. It is initialized with a number of particles and a number of qubits. The particles are created in the constructor and stored in the `self.particles` list.
+
 ```python
-def __init__(self, num_qubits):
-    self.num_qubits = num_qubits
-    self.circuit = QuantumCircuit(self.num_qubits)
-    self.circuit.h(range(self.num_qubits))
-    self.circuit.measure_all()
+class QuantumSwarm:
+    def __init__(self, num_particles, num_qubits):
+        self.particles = [QuantumParticle (num_qubits) for _ in range (num_particles)]
 ```
-The run method runs the quantum circuit on a quantum simulator and returns the counts of the quantum circuit.
+
+In the main part of the code, a `QuantumSwarm` object is created with 10 particles, each having 5 qubits. Then, each particle's quantum circuit is printed.
+
 ```python
-def run(self):
-    return execute(self.circuit, Aer.get_backend('qasm_simulator'), shots=1).result().get_counts()
+if __name__ == '__main__':
+    swarm = QuantumSwarm (10, 5)
+    for particle in swarm.particles:
+        print (particle)
 ```
-The QuantumSwarm class represents a swarm of quantum particles. The swarm is initialized with a number of particles, each represented by a QuantumParticle object. The __init__ method initializes the swarm by creating a list of QuantumParticle objects.
-```python
-def __init__(self, num_particles, num_qubits):
-    self.particles = [QuantumParticle(num_qubits) for _ in range(num_particles)]
-```
-The run method runs the quantum circuit of each particle in the swarm on a quantum simulator.
-```python
-def run(self):
-    for particle in self.particles:
-        print(particle.run())
-```
-In summary, this code uses a Quantum Particle Swarm Optimization (QPSO) algorithm to solve the Traveling Salesman Problem (TSP). 
-The QPSO algorithm is a quantum version of the classical Particle Swarm Optimization (PSO) algorithm, which is a computational method that optimizes a problem by iteratively trying to improve a candidate solution with regard to a given measure of quality.
+
+In summary, this code represents a quantum approach to the PSO, where each particle is represented as a quantum circuit. The goal is to find the state of the qubits that optimizes a certain problem, which is not specified in this code.
+
 ## Quantum Ant Colony Optimization
+The provided Python code is an implementation of a Quantum Ant Colony Optimization (QACO) algorithm using the Qiskit library. The QACO is a quantum version of the classical Ant Colony Optimization (ACO) algorithm, which is a probabilistic technique used to find an optimal path in a graph.
 
-Quantum Ant Colony Optimization is a variant of the classical ant colony optimization algorithm that uses quantum mechanics principles. It uses a colony of quantum ants that move in the search space according to quantum rules.
+The `QuantumAnt` class represents a single ant in the colony. Each ant is represented by a quantum circuit, which is initialized in the constructor. The quantum circuit is created with a number of qubits specified by `num_qubits`. The Hadamard gate (`self.circuit.h`) is applied to all qubits, putting them into a superposition of states. Finally, a measurement is performed on all qubits (`self.circuit.measure_all()`).
 
-The provided code is a Python implementation of the Quantum Ant Colony Optimization (QACO) algorithm. The QACO algorithm is a quantum version of the classical Ant Colony Optimization (ACO) algorithm, which is a probabilistic technique for solving computational problems which can be reduced to finding good paths through graphs.  
-The code is divided into two classes: QuantumAnt and QuantumAntColony.  
+```python
+class QuantumAnt:
+    def __init__(self, num_qubits):
+        self.circuit = QuantumCircuit (num_qubits)
+        self.circuit.h (range (num_qubits))
+        self.circuit.measure_all ()
+```
 
-The QuantumAnt class represents a quantum ant in the QACO algorithm. Each quantum ant is represented by a quantum circuit. The quantum circuit is created with a number of qubits equal to the number of cities in the problem. 
-The __init__ method initializes the quantum circuit by applying a Hadamard gate to all qubits to create a superposition of states, and then measures all qubits.
-```python
-def __init__(self, num_qubits):
-    self.circuit = QuantumCircuit(num_qubits)
-    self.circuit.h(range(num_qubits))
-    self.circuit.measure_all()
-```
-The run method runs the quantum circuit on a quantum simulator and returns the counts of the quantum circuit.
-```python
-def run(self):
-    return execute(self.circuit, Aer.get_backend('qasm_simulator'), shots=1).result().get_counts()
-```
-The QuantumAntColony class represents a colony of quantum ants. The colony is initialized with a number of ants, each represented by a QuantumAnt object. The __init__ method initializes the colony by creating a list of QuantumAnt objects.
-```python
-def __init__(self, num_ants, num_qubits):
-    self.ants = [QuantumAnt(num_qubits) for _ in range(num_ants)]
-```
-The run method runs the quantum circuit of each ant in the colony on a quantum simulator.
-```python
-def run(self):
-    for ant in self.ants:
-        print(ant.run())
-```
-In summary, this code uses a Quantum Ant Colony Optimization (QACO) algorithm to solve the Traveling Salesman Problem (TSP). 
-The QACO algorithm is a quantum version of the classical Ant Colony Optimization (ACO) algorithm, which is a probabilistic technique for solving computational problems which can be reduced to finding good paths through graphs. 
+The `QuantumAntColony` class represents a colony of quantum ants. It is initialized with a number of ants and a number of qubits. The ants are created in the constructor and stored in the `self.ants` list.
 
-The quantum version of the algorithm uses quantum annealing to find the optimal solution.
+```python
+class QuantumAntColony:
+    def __init__(self, num_ants, num_qubits):
+        self.ants = [QuantumAnt (num_qubits) for _ in range (num_ants)]
+```
+
+In the main part of the code, a `QuantumAntColony` object is created with a number of ants equal to the number of cities, each having a number of qubits equal to the number of cities. Then, the colony object is printed.
+
+```python
+num_cities = 5
+colony = QuantumAntColony (num_cities, num_cities)
+print (colony)
+```
+
+In summary, this code represents a quantum approach to the ACO, where each ant is represented as a quantum circuit. The goal is to find the state of the qubits that optimizes a certain problem, which is not specified in this code.
 
 ## Quantum Approximate Optimization Algorithm
+The provided Python code is an implementation of a Greenberger–Horne–Zeilinger (GHZ) state preparation using the Qiskit library. The GHZ state is a certain type of entangled quantum state that involves at least three subsystems (qubits in this case).
 
-The Quantum Approximate Optimization Algorithm is a quantum algorithm for solving combinatorial optimization problems. It uses a variational approach, where a parameterized quantum circuit is optimized to find the best solution.
+The `GHZCircuit` class is the main class in this code. It is initialized with a number of qubits and creates a quantum circuit with that number of qubits.
 
-The provided code is a Python implementation of the Quantum Approximate Optimization Algorithm (QAOA) for solving the Traveling Salesman Problem (TSP). The QAOA is a quantum algorithm for approximating the solution to optimization problems. The QAOASolver class is the main class implementing the QAOA. 
-
-It is initialized with a graph G representing the TSP, the number of QAOA steps p, and the angles gamma and beta for the Ising interactions and X rotations in the QAOA circuit, respectively.
 ```python
-def __init__(self, G, p, gamma, beta):
-    self.G = G
-    self.p = p
-    self.gamma = gamma
-    self.beta = beta
+class GHZCircuit:
+    def __init__(self, num_qubits):
+        self.num_qubits = num_qubits
+        self.qc = QuantumCircuit (self.num_qubits)
 ```
-The qaoa_circuit method creates a QAOA circuit for the given TSP problem. It creates a quantum circuit with a quantum register q and a classical register c. 
 
-It then applies a Hadamard gate to all qubits to create a superposition of states. For each pair of connected nodes in the graph, it applies a controlled-Z gate with an angle gamma for the Ising interactions. 
+The `prepare_state` method prepares the GHZ state. It first applies a Hadamard gate (`self.qc.h`) to the 0th qubit, creating a superposition of states. Then, it applies a phase gate (`self.qc.p`) to the 0th qubit, adding a quantum phase of pi/2. Finally, it applies a controlled-NOT gate (`self.qc.cx`) between the 0th qubit and each of the other qubits, creating entanglement.
 
-Finally, it applies an X rotation with an angle beta to all qubits and measures all qubits.
 ```python
-def qaoa_circuit(self):
-    q = QuantumRegister(self.G.number_of_nodes(), 'q')
-    c = ClassicalRegister(self.G.number_of_nodes(), 'c')
-    qc = QuantumCircuit(q, c)
-    for i in range(self.G.number_of_nodes()):
-        qc.h(i)
-        for j in range(i):
-            if self.G.has_edge(i, j):
-                qc.cx(i, j)
-                qc.rz(self.gamma, j)
-                qc.cx(i, j)
-        qc.rx(self.beta, i)
-        qc.measure(i, i)
-    return qc
+def prepare_state(self):
+    self.qc.h (0)
+    self.qc.p (np.pi / 2, 0)
+    for i in range (1, self.num_qubits):
+        self.qc.cx (0, i)
 ```
-The run_qaoa method runs the QAOA circuit on a quantum simulator and returns the counts of the quantum circuit.
-```python
-def run_qaoa(self):
-    qc = self.qaoa_circuit()
-    backend = Aer.get_backend('qasm_simulator')
-    job = execute(qc, backend, shots=1000)
-    result = job.result()
-    counts = result.get_counts()
-    return counts
-```
-The solve method solves the TSP using the QAOA algorithm. It first converts the TSP problem to a QuadraticProgram. It then creates a QAOA instance and a MinimumEigenOptimizer to wrap the QAOA instance. 
 
-It solves the QuadraticProgram using the MinimumEigenOptimizer and returns the result and the most likely sample.
-```python
-def solve(self):
-    quadratic_program = self.tsp_to_quadratic_program()
-    qaoa = QAOA(optimizer=COBYLA(), p=self.p, quantum_instance=QuantumInstance(Aer.get_backend('qasm_simulator')))
-    minimum_eigen_optimizer = MinimumEigenOptimizer(qaoa)
-    result = minimum_eigen_optimizer.solve(quadratic_program)
-    x = result.x
-    return x
-```
-In summary, this code uses the Quantum Approximate Optimization Algorithm (QAOA) to solve the Traveling Salesman Problem (TSP). The QAOA is a quantum algorithm for approximating the solution to optimization problems. 
+The `get_decomposed_circuit`, `get_circuit_draw`, and `get_circuit_qasm` methods return the decomposed circuit, the drawn circuit, and the Quantum Assembly Language (QASM) representation of the circuit, respectively.
 
-It uses a combination of quantum and classical techniques to find the optimal solution.
+```python
+def get_decomposed_circuit(self):
+    return self.qc.decompose()
+
+def get_circuit_draw(self):
+    return self.qc.draw()
+
+def get_circuit_qasm(self):
+    return self.qc
+```
+
+The `print_counts` method measures all qubits and prints the counts of the measurement results.
+
+```python
+def print_counts(self):
+    print (self.qc.measure_all ())
+```
+
+In the main part of the code, a `GHZCircuit` object is created with 3 qubits. The GHZ state is prepared, and then the drawn circuit, the decomposed circuit, and the QASM representation of the circuit are printed.
+
+```python
+if __name__ == '__main__':
+    ghz = GHZCircuit (3)
+    ghz.prepare_state ()
+    print (ghz.get_circuit_draw ())
+    print (ghz.get_decomposed_circuit ())
+    print (ghz.get_circuit_qasm ())
+```
+
+In summary, this code prepares a GHZ state on a quantum circuit and provides methods to visualize and analyze the circuit.
 
 ## Quantum Non-Linear Solvers
 

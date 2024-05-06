@@ -1,6 +1,9 @@
 import numpy as np
 import plotly.graph_objects as go
 
+# Create a default random number generator
+rng = np.random.default_rng ()
+
 
 # Define a function for the XOR operation
 def xor_operation(vector_a, vector_b):
@@ -13,7 +16,7 @@ def quantum_transformation(input_vector, input_scalar):
 
 
 # Generate more random 3D vectors to represent hypervectors for visualization
-vectors = [np.random.randint (2, size=3) for _ in range (5)]  # List of binary vectors
+vectors = [rng.integers (2, size=3) for _ in range (5)]  # List of binary vectors
 
 # Perform XOR operation and quantum-inspired transformation on the vectors
 xor_vectors = [xor_operation (vectors [i], vectors [(i + 1) % 5]) for i in range (5)]
@@ -21,7 +24,7 @@ quantum_vectors = [quantum_transformation (vector, 0.5) for vector in vectors]  
 
 # Create a 3D scatter plot for the vectors and axes
 fig = go.Figure (data=[go.Scatter3d (x=[0, vector [0]], y=[0, vector [1]], z=[0, vector [2]], mode='lines+markers',
-                                     marker=dict (size=6, color=np.random.rand (3)), name=f"Vector {i + 1}")
+                                     marker=dict (size=6, color=rng.random (3)), name=f"Vector {i + 1}")
                        for i, vector in enumerate (quantum_vectors)])
 
 # Add axes to the figure

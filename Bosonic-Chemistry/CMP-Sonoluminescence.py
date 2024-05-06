@@ -1,6 +1,6 @@
 import numpy as np
 import plotly.graph_objects as go
-from qutip import *
+from qutip import destroy, basis, sesolve
 
 # Define system parameters
 N = 50  # number of states in the Hilbert space

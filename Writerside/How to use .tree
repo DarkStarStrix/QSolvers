@@ -6,6 +6,7 @@
                  name="Help"
                  start-page="starter-topic.md">
 
+    <toc-element topic="Use-Cases-For-each-solver.md"/>
     <toc-element topic="How-the-Solvers-work.md"/>
     <toc-element topic="Explaination-of-the-bosonic-solvers.md"/>
     <toc-element topic="Technical-Explaination.md"/>

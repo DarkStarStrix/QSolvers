@@ -11,5 +11,10 @@
         <option name="enabled" value="true" />
       </BoolValueOverride>
     </option>
+    <option name="showEditorInlineBlameOverride">
+      <BoolValueOverride>
+        <option name="enabled" value="true" />
+      </BoolValueOverride>
+    </option>
   </component>
 </project>

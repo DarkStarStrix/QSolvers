@@ -4,6 +4,7 @@ from wtforms import StringField, SubmitField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Email
 from flask_sqlalchemy import SQLAlchemy
 from textblob import TextBlob
+from Quantum_Logistics_Solvers.Quantum_Genetic_Algorithm import QuantumTSP
 
 app = Flask (__name__)
 app.config ['SECRET_KEY'] = 'your-secret-key'
@@ -47,15 +48,9 @@ def register():
     return render_template ('register.html', form=form)
 
 
-@app.route ('/user/<email>', methods=['GET', 'POST'])
-@app.route ('/business/<email>', methods=['GET', 'POST'])
-def user(email):
+@app.route ('/<category>/<email>', methods=['GET', 'POST'])
+def user(category, email):
     return render_template ('user.html', email=email)
-
-
-@app.route ('/pay/<email>', methods=['GET', 'POST'])
-def pay(email):
-    return render_template (request.args.get ('status', 'pay') + '.html', email=email)
 
 
 @app.route ('/feedback', methods=['GET', 'POST'])
@@ -73,6 +68,40 @@ def feedback():
 @app.route ('/')
 def index():
     return render_template ('index.html')
+
+
+@app.route ('/run_algorithm', methods=['POST'])
+def run_algorithm():
+    # Extract the algorithm name and the number of cities from the request
+    algorithm_name = request.json.get ('algorithm_name')
+    num_cities = int (request.json.get ('num_cities'))  # Convert num_cities to an integer
+
+    print (f"Running {algorithm_name} with {num_cities} cities")  # Log the number of cities
+
+    # Check if the algorithm is in the Algorithm dictionary
+    if algorithm_name in Algorithm:
+        # Get the algorithm class
+        algorithm_class = Algorithm [algorithm_name]
+
+        # Create an instance of the algorithm
+        algorithm = algorithm_class (num_cities, pop_size=100, generations=500, mutation_rate=0.01, elite_size=20)
+
+        # Run the algorithm with the provided number of cities
+        result = algorithm.execute ()  # Call the execute method
+
+        # Print "Plot printed" in the console
+        print ("Plot printed")
+
+        # Return the result and the plot as a base64 string
+        return {"result": result, "plot": result ['plot']}, 200
+    else:
+        # Return an error message if the algorithm is not found
+        return {"error": "Algorithm not found"}, 404
+
+
+Algorithm = {
+    'Quantum Genetic Algorithm': QuantumTSP
+}
 
 
 if __name__ == '__main__':
