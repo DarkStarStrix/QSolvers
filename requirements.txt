@@ -46,7 +46,7 @@ pandas==2.2.1
 pandas-datareader==0.10.0
 pbr==6.0.0
 peewee==3.17.1
-pillow==10.2.0
+pillow==10.3.0
 pipdeptree==2.16.1
 plotly==5.19.0
 prompt-toolkit==3.0.43
