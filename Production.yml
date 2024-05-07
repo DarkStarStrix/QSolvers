@@ -1,0 +1,86 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: your-docker-username/quantum-genetic-algorithm:latest
+
+    - name: Set up Kubectl
+      uses: azure/setup-kubectl@v1
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-west-2
+
+    - name: Install AWS IAM Authenticator
+      run: |
+        curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.18.9/2020-09-18/bin/linux/amd64/aws-iam-authenticator
+        chmod +x ./aws-iam-authenticator
+        sudo mv aws-iam-authenticator /usr/local/bin
+
+    - name: Connect to EKS cluster
+      run: |
+        aws eks --region us-west-2 update-kubeconfig --name your-eks-cluster-name
+
+    - name: Deploy to EKS
+      run: |
+        kubectl apply -f - <<EOF
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: quantum-genetic-algorithm
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              app: quantum-genetic-algorithm
+          template:
+            metadata:
+              labels:
+                app: quantum-genetic-algorithm
+            spec:
+              containers:
+              - name: quantum-genetic-algorithm
+                image: your-docker-username/quantum-genetic-algorithm:latest
+                ports:
+                - containerPort: 80
+        EOF
+        
+        kubectl apply -f - <<EOF
+        apiVersion: v1
+kind: Service
+metadata:
+  name: quantum-genetic-algorithm
+spec:
+    selector:
+        app: quantum-genetic-algorithm
+    ports:
+        - protocol: TCP
+          port: 80
+          targetPort: 80
+    type: LoadBalancer
+            EOF
