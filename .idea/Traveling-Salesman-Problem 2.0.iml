@@ -5,6 +5,9 @@
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/data" />
       <excludeFolder url="file://$MODULE_DIR$/.idea/copilot/chatSessions" />
+      <excludeFolder url="file://$MODULE_DIR$/Application_Folder/API_Backend/Quantum_Logistics_Solvers" />
+      <excludeFolder url="file://$MODULE_DIR$/Application_Folder/API_Backend/Static" />
+      <excludeFolder url="file://$MODULE_DIR$/Application_Folder/API_Backend/templates" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9 (QSolvers)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
