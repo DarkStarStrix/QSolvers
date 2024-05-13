@@ -1,8 +1,9 @@
 import os
 import boto3
 
-os.environ ['AWS_ACCESS_KEY_ID'] = 'AKIA5XRUVWG2T5RUJDVU'
-os.environ ['AWS_SECRET_ACCESS_KEY'] = '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'
+
+os.environ ['AWS_ACCESS_KEY_ID'] = '%s' % dclt_
+os.environ ['AWS_SECRET_ACCESS_KEY'] = '%s' % dclt_
 
 s3transfer = boto3.client ('s3', region_name='us-east-1')
 
