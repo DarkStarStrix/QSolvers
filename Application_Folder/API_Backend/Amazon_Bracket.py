@@ -1,14 +1,27 @@
 import os
-from braket.aws import AwsDevice
-from braket.circuits import Circuit
+import boto3
 
-# Get the S3 bucket and folder from environment variables
-s3_folder = (os.getenv("AWS_BUCKET_NAME"), os.getenv("AWS_FOLDER_NAME"))
+os.environ ['AWS_ACCESS_KEY_ID'] = 'AKIA5XRUVWG2T5RUJDVU'
+os.environ ['AWS_SECRET_ACCESS_KEY'] = 'V+5SNmxV6a1RYf9t9dyCMHYA+F/LdFIdYNpDclt+'
 
-# Set up the AWS device and build your circuit
-device = AwsDevice("arn:aws:braket:::device/quantum-simulator/amazon/tn1")
-circuit = Circuit().h(0).cnot(0, 1)
+s3transfer = boto3.client ('s3', region_name='us-east-1')
 
-# Create the task and print out the result
-result = device.run(circuit, s3_folder, shots=1000).result()
-print(result.measurement_counts)
+
+def create_app_version(app_name, bucket_name):
+    beanstalk = boto3.client ('elasticbeanstalk', region_name='us-east-1')
+    source_bundle = {'S3Bucket': bucket_name, 'S3Key': 'Application_Folder'}
+    beanstalk.create_application_version (ApplicationName=app_name, VersionLabel='v1', SourceBundle=source_bundle)
+
+
+def update_environment(app_name, env_name):
+    beanstalk = boto3.client ('elasticbeanstalk', region_name='us-east-1')
+    beanstalk.update_environment (ApplicationName=app_name, EnvironmentName=env_name, VersionLabel='v1')
+
+
+def main():
+    create_app_version ('qsolvers', 'qsolvers')
+    update_environment ('qsolvers', 'qsolvers')
+
+
+if __name__ == "__main__":
+    main ()

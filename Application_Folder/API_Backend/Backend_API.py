@@ -74,7 +74,14 @@ def index():
 def run_algorithm():
     # Extract the algorithm name and the number of cities from the request
     algorithm_name = request.json.get ('algorithm_name')
-    num_cities = int (request.json.get ('num_cities'))  # Convert num_cities to an integer
+    num_cities = request.json.get ('num_cities')
+
+    # Check if num_cities is None
+    if num_cities is None:
+        return {"error": "The num_cities value is required"}, 400
+
+    # Convert num_cities to an integer
+    num_cities = int(num_cities)
 
     print (f"Running {algorithm_name} with {num_cities} cities")  # Log the number of cities
 
@@ -96,7 +103,7 @@ def run_algorithm():
         return {"result": result, "plot": result ['plot']}, 200
     else:
         # Return an error message if the algorithm is not found
-        return {"error": "Algorithm not found"}, 404
+        return {"error": "Algorithm not found"}
 
 
 Algorithm = {
