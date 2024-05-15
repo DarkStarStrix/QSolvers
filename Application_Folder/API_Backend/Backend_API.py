@@ -73,10 +73,12 @@ def index():
 @app.route ('/run_algorithm', methods=['POST'])
 def run_algorithm():
     # Extract the algorithm name and the number of cities from the request
-    algorithm_name = request.json.get ('algorithm_name')
+    algorithm_name = request.json.get ('algorithm')  # Changed 'algorithm_name' to 'algorithm'
     num_cities = request.json.get ('num_cities')
 
-    # Check if num_cities is None
+    # Check if algorithm_name or num_cities is None
+    if algorithm_name is None:
+        return {"error": "The algorithm value is required"}, 400  # Changed 'algorithm_name' to 'algorithm'
     if num_cities is None:
         return {"error": "The num_cities value is required"}, 400
 
