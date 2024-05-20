@@ -1,4 +1,5 @@
 !/Application_Folder/
 !/QSolvers/
 !/Application_Folder/API_Backend/Backend_API.py
-!/Application_Folder/API_Backend/
+AWS_Lambda.py
+
