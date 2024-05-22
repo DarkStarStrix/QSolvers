@@ -112,6 +112,7 @@ In tourism, the TSP can be used to plan the itinerary for sightseeing. Given a l
 In conclusion, the TSP is a classic problem with numerous practical applications. Despite its computational complexity, solutions to the TSP can result in significant cost savings and efficiency improvements in various fields.
 
 ## Visualizing the Traveling Salesman Problem
+<img align="right" src="traveling_salesman.gif" alt="TSP"/>
 
 In the animation above, you can see how the Traveling Salesman Problem (TSP) is visualized. The TSP is a classic algorithmic problem in the field of computer science and operations research. It focuses on optimization, where a salesman is given a list of cities and must determine the shortest route that allows him to visit each city exactly once and return to his original location.
 The nodes in the animation represent the cities, and the lines connecting them represent the distances between the cities. The goal is to find the shortest possible route that visits each city exactly once and returns to the starting city. The animation shows how different algorithms can be used to solve the TSP and find the optimal route.
@@ -136,7 +137,7 @@ using quantum computing to solve the TSP can potentially provide a significant s
 and it's using quantum mechanics to solve the TSP can provide a significant speedup over classical algorithms, allowing companies to find better solutions in less time.
 leading to more efficient operations and cost savings. over time and saving time money and reducing the carbon footprint. By not having to travel as far, delivery trucks can reduce their fuel consumption and emissions, leading to a more sustainable and environmentally friendly operation.
 
-## Route Planning for Sales Representatives
+## Route Planning for Sales Representatives - 2
 Sales representatives often have to visit multiple clients or stores in a single day. By solving the TSP, they can plan their route to minimize travel time, allowing them to visit more clients in a day and reduce transportation costs.
 using quantum computing to solve the TSP can potentially provide a significant speedup over classical algorithms, allowing sales representatives to find better routes in less time.
 
