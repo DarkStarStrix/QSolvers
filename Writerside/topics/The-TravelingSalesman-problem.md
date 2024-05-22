@@ -112,7 +112,6 @@ In tourism, the TSP can be used to plan the itinerary for sightseeing. Given a l
 In conclusion, the TSP is a classic problem with numerous practical applications. Despite its computational complexity, solutions to the TSP can result in significant cost savings and efficiency improvements in various fields.
 
 ## Visualizing the Traveling Salesman Problem
-![traveling_salesman.gif](traveling_salesman.gif)
 
 In the animation above, you can see how the Traveling Salesman Problem (TSP) is visualized. The TSP is a classic algorithmic problem in the field of computer science and operations research. It focuses on optimization, where a salesman is given a list of cities and must determine the shortest route that allows him to visit each city exactly once and return to his original location.
 The nodes in the animation represent the cities, and the lines connecting them represent the distances between the cities. The goal is to find the shortest possible route that visits each city exactly once and returns to the starting city. The animation shows how different algorithms can be used to solve the TSP and find the optimal route.
