@@ -13,45 +13,45 @@ class QuantumTSP:
         self.generations = generations
         self.mutation_rate = mutation_rate
         self.elite_size = elite_size
-        self.population = [np.random.permutation (len (cities)) for _ in range (pop_size)]
-        self.fitness = self.calculate_fitness ()
-        self.best_individual = self.population [np.argmin (self.fitness)]
-        self.best_fitness = np.min (self.fitness)
+        self.population = [np.random.permutation(len(cities)) for _ in range(pop_size)]
+        self.fitness = self.calculate_fitness()
+        self.best_individual = self.population[np.argmin(self.fitness)]
+        self.best_fitness = np.min(self.fitness)
 
     def calculate_fitness(self):
         fitness = []
         for individual in self.population:
             distance = 0
-            for i in range (len (individual) - 1):
-                distance += np.linalg.norm (self.cities [individual [i]] - self.cities [individual [i + 1]])
-            distance += np.linalg.norm (self.cities [individual [-1]] - self.cities [individual [0]])
-            fitness.append (distance)
+            for i in range(len(individual) - 1):
+                distance += np.linalg.norm(self.cities[individual[i]] - self.cities[individual[i + 1]])
+            distance += np.linalg.norm(self.cities[individual[-1]] - self.cities[individual[0]])
+            fitness.append(distance)
         return fitness
 
     def select_parents(self):
-        fitness = 1 / np.array (self.fitness)
-        fitness /= np.sum (fitness)
-        parents = [self.population [i] for i in
-                   numpy.random.Generator (len (self.population), self.elite_size, p=fitness, replace=False)]
+        fitness = 1 / np.array(self.fitness)
+        fitness /= np.sum(fitness)
+        rng = np.random.default_rng()
+        parents = [self.population[i] for i in rng.choice(len(self.population), self.elite_size, p=fitness, replace=False)]
         return parents
 
     def crossover(self, parents):
         children = []
-        for i in range (self.pop_size - self.elite_size):
-            parent1 = parents [numpy.random.Generator (len (parents))]
-            parent2 = parents [numpy.random.Generator (len (parents))]
-            child = np.copy (parent1)
-            for j in range (len (child)):
-                if np.random.rand () < 0.5:
-                    child [j] = parent2 [j]
-            children.append (child)
+        for i in range(self.pop_size - self.elite_size):
+            parent1 = parents[rng.choice(len(parents))]
+            parent2 = parents[rng.choice(len(parents))]
+            child = np.copy(parent1)
+            for j in range(len(child)):
+                if np.random.rand() < 0.5:
+                    child[j] = parent2[j]
+            children.append(child)
         return children
 
     def mutate(self, children):
-        for i in range (len (children)):
-            if np.random.rand () < self.mutation_rate:
-                index1, index2 = np.random.choice (len (children [i]), 2, replace=False)
-                children [i] [index1], children [i] [index2] = children [i] [index2], children [i] [index1]
+        for i in range(len(children)):
+            if np.random.rand() < self.mutation_rate:
+                index1, index2 = np.random.choice(len(children[i]), 2, replace=False)
+                children[i][index1], children[i][index2] = children[i][index2], children[i][index1]
         return children
 
     def create_circuit(self):
@@ -124,17 +124,18 @@ class QuantumTSP:
 
 
 if __name__ == "__main__":
-    cities = numpy.random.Generator (10, 2)
-    tsp = QuantumTSP (cities, 100, 100, 0.01, 10)
-    for _ in range (tsp.generations):
-        parents = tsp.select_parents ()
-        children = tsp.crossover (parents)
-        children = tsp.mutate (children)
+    rng = np.random.default_rng()
+    cities = rng.random((10, 2))
+    tsp = QuantumTSP(cities, 100, 100, 0.01, 10)
+    for _ in range(tsp.generations):
+        parents = tsp.select_parents()
+        children = tsp.crossover(parents)
+        children = tsp.mutate(children)
         tsp.population = parents + children
-        tsp.fitness = tsp.calculate_fitness ()
-        best_index = np.argmin (tsp.fitness)
-        if tsp.fitness [best_index] < np.min (tsp.best_fitness):
-            tsp.best_individual = tsp.population [best_index]
-            tsp.best_fitness = tsp.fitness [best_index]
-    print (tsp.best_individual, tsp.best_fitness)
-    QuantumTSP.plot_route (cities, tsp.best_individual)  # visualize the best route
+        tsp.fitness = tsp.calculate_fitness()
+        best_index = np.argmin(tsp.fitness)
+        if tsp.fitness[best_index] < tsp.best_fitness:
+            tsp.best_individual = tsp.population[best_index]
+            tsp.best_fitness = tsp.fitness[best_index]
+    print(tsp.best_individual, tsp.best_fitness)
+    QuantumTSP.plot_route(cities, tsp.best_individual)  # visualize the best route
