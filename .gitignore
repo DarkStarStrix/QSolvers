@@ -2,4 +2,5 @@
 !/QSolvers/
 !/Application_Folder/API_Backend/Backend_API.py
 AWS_Lambda.py
+pip_analyzer.py
 

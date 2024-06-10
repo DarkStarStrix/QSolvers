@@ -72,18 +72,25 @@ def index():
 
 @app.route ('/run_algorithm', methods=['POST'])
 def run_algorithm():
+    # Check if the request is JSON
+    if not request.is_json:
+        return {"error": "Missing JSON in request"}, 400
+
     # Extract the algorithm name and the number of cities from the request
-    algorithm_name = request.json.get ('algorithm')  # Changed 'algorithm_name' to 'algorithm'
+    algorithm_name = request.json.get ('algorithm')
     num_cities = request.json.get ('num_cities')
 
     # Check if algorithm_name or num_cities is None
     if algorithm_name is None:
-        return {"error": "The algorithm value is required"}, 400  # Changed 'algorithm_name' to 'algorithm'
+        return {"error": "The algorithm value is required"}, 400
     if num_cities is None:
         return {"error": "The num_cities value is required"}, 400
 
     # Convert num_cities to an integer
-    num_cities = int(num_cities)
+    try:
+        num_cities = int(num_cities)
+    except ValueError:
+        return {"error": "The num_cities value must be an integer"}, 400
 
     print (f"Running {algorithm_name} with {num_cities} cities")  # Log the number of cities
 
@@ -96,7 +103,10 @@ def run_algorithm():
         algorithm = algorithm_class (num_cities, pop_size=100, generations=500, mutation_rate=0.01, elite_size=20)
 
         # Run the algorithm with the provided number of cities
-        result = algorithm.execute ()  # Call the execute method
+        try:
+            result = algorithm.execute ()  # Call the execute method
+        except Exception as e:
+            return {"error": str(e)}, 500
 
         # Print "Plot printed" in the console
         print ("Plot printed")
@@ -114,4 +124,4 @@ Algorithm = {
 
 
 if __name__ == '__main__':
-    app.run (debug=False)
+    app.run (debug=True)
