@@ -106,7 +106,7 @@ def run_algorithm():
         try:
             result = algorithm.execute ()  # Call the execute method
         except Exception as e:
-            return {"error": str(e)}, 500
+            return {"Internal server error occurred"
 
         # Print "Plot printed" in the console
         print ("Plot printed")
@@ -124,4 +124,4 @@ Algorithm = {
 
 
 if __name__ == '__main__':
-    app.run (debug=True)
+    app.run (debug=False)
