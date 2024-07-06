@@ -62,7 +62,7 @@ qutip==5.0.0b1
 requests==2.32.0
 rich==13.7.1
 rustworkx==0.14.1
-scipy~=1.12.0
+scipy
 six==1.16.0
 soupsieve==2.5
 stdlib-list==0.10.0
