@@ -16,7 +16,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.10'
+        python-version: '3.9'
 
     - name: Install and update Python dependencies
       run: |
@@ -26,7 +26,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '14'
+        node-version: '16'
 
     - name: Install and update JavaScript dependencies
       run: |
